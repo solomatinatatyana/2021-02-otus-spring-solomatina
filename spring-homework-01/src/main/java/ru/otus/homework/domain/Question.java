@@ -17,6 +17,11 @@ public class Question {
 
     public Question() { }
 
+    public Question(String id, String questionText) {
+        this.id = id;
+        this.questionText = questionText;
+    }
+
     public String getQuestionText() {
         return questionText;
     }

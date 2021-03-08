@@ -15,13 +15,19 @@ public class SurveyTest {
         assertEquals("test.csv", survey.getName());
     }
 
-    @DisplayName("Проверка сеттера класса Survey")
+    @DisplayName("Проверка сеттера name класса Survey")
     @Test()
-    public void shouldHaveCorrectSurveySetter(){
+    public void shouldHaveCorrectNameSurveySetter(){
         Survey survey = new Survey();
         survey.setName("Survey1");
         assertEquals("Survey1", survey.getName());
     }
 
-
+    @DisplayName("Проверка сеттера result класса Survey")
+    @Test()
+    public void shouldHaveCorrectResultSurveySetter(){
+        Survey survey = new Survey();
+        survey.setResult("Result");
+        assertEquals("Result", survey.getResult());
+    }
 }
