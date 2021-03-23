@@ -1,0 +1,12 @@
+
+${AnsiColor.GREEN} .----------------.  .----------------.  .----------------.  .----------------.  .----------------.
+${AnsiColor.GREEN}| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+${AnsiColor.GREEN}| |${Ansi.RED}    _______   ${AnsiColor.GREEN}| || |${Ansi.RED}  _________   ${AnsiColor.GREEN}| || |${Ansi.RED}      __      ${AnsiColor.GREEN}| || |${Ansi.RED}  _______     ${AnsiColor.GREEN}| || |${Ansi.RED}  _________   ${AnsiColor.GREEN}| |
+${AnsiColor.GREEN}| |${Ansi.RED}   /  ___  |  ${AnsiColor.GREEN}| || |${Ansi.RED} |  _   _  |  ${AnsiColor.GREEN}| || |${Ansi.RED}     /  \     ${AnsiColor.GREEN}| || |${Ansi.RED} |_   __ \    ${AnsiColor.GREEN}| || |${Ansi.RED} |  _   _  |  ${AnsiColor.GREEN}| |
+${AnsiColor.GREEN}| |${Ansi.RED}  |  (__ \_|  ${AnsiColor.GREEN}| || |${Ansi.RED} |_/ | | \_|  ${AnsiColor.GREEN}| || |${Ansi.RED}    / /\ \    ${AnsiColor.GREEN}| || |${Ansi.RED}   | |__) |   ${AnsiColor.GREEN}| || |${Ansi.RED} |_/ | | \_|  ${AnsiColor.GREEN}| |
+${AnsiColor.GREEN}| |${Ansi.RED}   '.___`-.   ${AnsiColor.GREEN}| || |${Ansi.RED}     | |      ${AnsiColor.GREEN}| || |${Ansi.RED}   / ____ \   ${AnsiColor.GREEN}| || |${Ansi.RED}   |  __ /    ${AnsiColor.GREEN}| || |${Ansi.RED}     | |      ${AnsiColor.GREEN}| |
+${AnsiColor.GREEN}| |${Ansi.RED}  |`\____) |  ${AnsiColor.GREEN}| || |${Ansi.RED}    _| |_     ${AnsiColor.GREEN}| || |${Ansi.RED} _/ /    \ \_ ${AnsiColor.GREEN}| || |${Ansi.RED}  _| |  \ \_  ${AnsiColor.GREEN}| || |${Ansi.RED}    _| |_     ${AnsiColor.GREEN}| |
+${AnsiColor.GREEN}| |${Ansi.RED}  |_______.'  ${AnsiColor.GREEN}| || |${Ansi.RED}   |_____|    ${AnsiColor.GREEN}| || |${Ansi.RED}|____|  |____|${AnsiColor.GREEN}| || |${Ansi.RED} |____| |___| ${AnsiColor.GREEN}| || |${Ansi.RED}   |_____|    ${AnsiColor.GREEN}| |
+${AnsiColor.GREEN}| |${Ansi.RED}              ${AnsiColor.GREEN}| || |              ${AnsiColor.GREEN}| || |              ${AnsiColor.GREEN}| || |              ${AnsiColor.GREEN}| || |              | |
+${AnsiColor.GREEN}| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+${AnsiColor.GREEN} '----------------'  '----------------'  '----------------'  '----------------'  '----------------'

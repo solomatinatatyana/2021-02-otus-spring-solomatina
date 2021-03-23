@@ -1,0 +1,7 @@
+spring:
+  messages:
+    basename: l10n/messages
+survey:
+  count-correct-answers: 3
+locale:
+  name: en_US
