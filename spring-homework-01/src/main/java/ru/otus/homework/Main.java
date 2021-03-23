@@ -1,23 +1,22 @@
 package ru.otus.homework;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.otus.homework.domain.Survey;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import ru.otus.homework.service.SurveyService;
 
 import java.io.IOException;
 
+@EnableAspectJAutoProxy
+@Configuration
+@ComponentScan
 public class Main {
     public static void main(String[] args) throws IOException {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context.xml");
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Main.class);
 
-        Survey survey = ctx.getBean(Survey.class);
         SurveyService service = ctx.getBean(SurveyService.class);
-        service.takeASurvey(service.getSurveyByName(survey.getName()));
-
-        ctx.close();
+        String result = service.takeASurvey();
+        System.out.println(result);
     }
-
-
-
-
 }

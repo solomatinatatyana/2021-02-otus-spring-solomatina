@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface SurveyService {
     Survey getSurveyByName(String surveyName);
-    void takeASurvey(Survey survey) throws IOException;
+    String takeASurvey() throws IOException;
     List<Question> getQuestions(Survey survey);
+    List<String> getCorrectAnswers(String fileName);
 }

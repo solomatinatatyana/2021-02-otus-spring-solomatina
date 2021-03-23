@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!--dependencies -->
-        <spring.context.version>5.3.4</spring.context.version>
+        <spring.version>5.3.4</spring.version>
         <log4j2.version>2.13.0</log4j2.version>
         <opencsv.version>5.3</opencsv.version>
         <commons.lang3.version>3.8.1</commons.lang3.version>
@@ -26,6 +26,7 @@
         <junit.jupiter.version>5.7.1</junit.jupiter.version>
         <mockito.version>3.6.28</mockito.version>
         <assertj.version>3.18.1</assertj.version>
+        <aspectj.version>1.9.6</aspectj.version>
 
         <surefire.plugin.version>3.0.0-M5</surefire.plugin.version>
     </properties>
@@ -35,7 +36,20 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring.context.version}</version>
+            <version>${spring.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
         </dependency>
         <!--log4j 2 -->
         <dependency>
@@ -95,6 +109,16 @@
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
     </dependencies>
 
