@@ -1,0 +1,6 @@
+id,questionText,answers
+1,What types of testing exist?,"[""Unit"", ""Integration"", ""Regression"" ,""Coloboration""]"
+2,Smoke testing is...,"[""take your answer""]"
+3,What programming languages you know?,"[""java"",""Python"",""C$"",""C#""]"
+4,REST is...,"[""take your answer""]"
+5,How many layers has model OSI,"[""7"",""4"",""0""]"
