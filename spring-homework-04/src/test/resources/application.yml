@@ -1,0 +1,11 @@
+spring:
+  messages:
+    basename: l10n/messages
+  shell:
+    interactive:
+      enabled: false
+survey:
+  count-correct-answers: 3
+locale:
+  name: en_US
+

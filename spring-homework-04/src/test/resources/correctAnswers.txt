@@ -1,0 +1,5 @@
+Unit, Integration, Regression
+a minimal set of tests for obvious errors
+java, Python, C#
+it is a style of software architecture for distributed systems
+7
