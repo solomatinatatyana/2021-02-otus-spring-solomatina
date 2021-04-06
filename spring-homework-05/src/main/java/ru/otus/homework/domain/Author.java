@@ -1,4 +1,10 @@
 package ru.otus.homework.domain;
 
-public class Author {
+import lombok.Data;
+
+@Data
+public final class Author {
+    private final long id;
+    private final String fullName;
+
 }

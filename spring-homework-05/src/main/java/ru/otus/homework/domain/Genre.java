@@ -1,4 +1,9 @@
 package ru.otus.homework.domain;
 
-public class Genre {
+import lombok.Data;
+
+@Data
+public final class Genre {
+    private final long id;
+    private final String name;
 }
