@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    data: data-test.sql
+  shell:
+    interactive:
+      enabled: false
