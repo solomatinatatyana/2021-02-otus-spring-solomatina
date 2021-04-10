@@ -33,12 +33,12 @@ public class GenreDaoJdbc implements GenreDao{
     public Optional<Genre> findById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
         return Optional.of(namedParameterJdbcOperations.queryForObject(
-                "select * from genres where id = :id", params, new GenreMapper()));
+                "select id, `name` from genres where id = :id", params, new GenreMapper()));
     }
 
     @Override
     public List<Genre> findAll() {
-        return namedParameterJdbcOperations.query("select * from genres", new GenreMapper());
+        return namedParameterJdbcOperations.query("select id, `name` from genres", new GenreMapper());
     }
 
     @Override

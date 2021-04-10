@@ -1,11 +1,22 @@
 package ru.otus.homework.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public final class Book {
-    private final long id;
-    private final String title;
-    private final long authorId;
-    private final long genreId;
+    private long id;
+    private String title;
+    private Author author;
+    private Genre genre;
+
+    @Override
+    public String toString() {
+        return "Название='" + title + '\'' +
+                ", автор=" + author.getFullName() +
+                ", Жанр=" + genre.getName();
+    }
 }

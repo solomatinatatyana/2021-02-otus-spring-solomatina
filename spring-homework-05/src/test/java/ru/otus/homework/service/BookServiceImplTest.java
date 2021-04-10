@@ -7,7 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import ru.otus.homework.dao.book.BookDao;
+import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
+import ru.otus.homework.domain.Genre;
 import ru.otus.homework.exceptions.BookException;
 import ru.otus.homework.service.books.BookServiceImpl;
 
@@ -32,7 +34,8 @@ public class BookServiceImplTest {
     @DisplayName("получать книгу по ее title")
     @Test
     public void shouldReturnBookByTitle(){
-        given(bookDao.findByName("test")).willReturn(Optional.of(new Book(1,"test", 1, 1)));
+        given(bookDao.findByName("test")).willReturn(Optional.of(new Book(1,"test",
+                new Author(1, "testAuthor"), new Genre(1, "testGenre"))));
         Book actualBook = bookService.getBookByTitle("test");
         assertThat(actualBook).isNotNull();
     }
@@ -40,7 +43,8 @@ public class BookServiceImplTest {
     @DisplayName("получать книгу по ее id")
     @Test
     public void shouldReturnBookById(){
-        given(bookDao.findById(1)).willReturn(Optional.of(new Book(1,"test", 1, 1)));
+        given(bookDao.findById(1)).willReturn(Optional.of(new Book(1,"test",
+                new Author(1, "testAuthor"), new Genre(1, "testGenre"))));
         Book actualBook = bookService.getBookById(1);
         assertThat(actualBook).isNotNull();
     }
@@ -49,8 +53,12 @@ public class BookServiceImplTest {
     @Test
     public void shouldReturnAllBooks(){
         List<Book> expectedBookList = Arrays.asList(
-                new Book(1,"testBook1", 1, 1),
-                new Book(2,"testBook2", 2, 2));
+                new Book(1,"test",
+                        new Author(1, "testAuthor"),
+                        new Genre(1, "testGenre")),
+                new Book(2,"test2",
+                        new Author(2, "testAuthor2"),
+                        new Genre(2, "testGenre2")));
         given(bookDao.findAll()).willReturn(expectedBookList);
         List<Book> actualBookList = bookService.getAllBooks();
         assertThat(actualBookList.equals(expectedBookList));

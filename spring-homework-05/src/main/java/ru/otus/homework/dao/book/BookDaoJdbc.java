@@ -3,7 +3,9 @@ package ru.otus.homework.dao.book;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
+import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
+import ru.otus.homework.domain.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,8 +29,8 @@ public class BookDaoJdbc implements BookDao{
                 Map.of(
                         "id", book.getId(),
                         "title", book.getTitle(),
-                        "author_id", book.getAuthorId(),
-                        "genre_id", book.getGenreId()));
+                        "author_id", book.getAuthor().getId(),
+                        "genre_id", book.getGenre().getId()));
     }
 
     @Override
@@ -41,19 +43,31 @@ public class BookDaoJdbc implements BookDao{
     public Optional<Book> findByName(String title){
         Map<String, Object> params = Collections.singletonMap("title", title);
         return Optional.of(namedParameterJdbcOperations.queryForObject(
-                "select * from books where title = :title", params, new BookMapper()));
+                "select b.id, b.title, a.fio, g.name, b.author_id, b.genre_id from books b " +
+                   "inner join authors a on b.author_id = a.id " +
+                   "inner join genres g on b.genre_id = g.id " +
+                   "where b.title = :title " +
+                   "order by b.title", params, new BookMapper()));
     }
 
     @Override
     public Optional<Book> findById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
         return Optional.of(namedParameterJdbcOperations.queryForObject(
-                "select * from books where id = :id", params, new BookMapper()));
+                "select b.id, b.title, a.fio, g.name, b.author_id, b.genre_id from books b " +
+                "inner join authors a on b.author_id = a.id " +
+                "inner join genres g on b.genre_id = g.id " +
+                "where b.id = :id " +
+                "order by b.title", params, new BookMapper()));
     }
 
     @Override
     public List<Book> findAll(){
-        return namedParameterJdbcOperations.query("select * from books", new BookMapper());
+        return namedParameterJdbcOperations.query(
+                "select b.id, b.title, a.fio, b.author_id, g.name, b.genre_id from books b " +
+                "inner join authors a on b.author_id = a.id " +
+                "inner join genres g on b.genre_id = g.id " +
+                "order by b.title", new BookMapper());
     }
 
     @Override
@@ -75,8 +89,10 @@ public class BookDaoJdbc implements BookDao{
             long id = resultSet.getLong("id");
             String title = resultSet.getString("title");
             long author_id = resultSet.getLong("author_id");
+            String fio = resultSet.getString("fio");
             long genre_id = resultSet.getLong("genre_id");
-            return new Book(id, title, author_id, genre_id);
+            String genreName = resultSet.getString("name");
+            return new Book(id, title, new Author(author_id, fio), new Genre(genre_id, genreName));
         }
     }
 }

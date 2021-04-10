@@ -2,7 +2,9 @@ package ru.otus.homework.service.books;
 
 import org.springframework.stereotype.Service;
 import ru.otus.homework.dao.book.BookDao;
+import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
+import ru.otus.homework.domain.Genre;
 import ru.otus.homework.exceptions.BookException;
 
 import java.util.List;
@@ -17,7 +19,7 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public void insertBook(long id, String title, long authorId, long genreId) {
-        bookDao.insert(new Book(id, title, authorId, genreId));
+        bookDao.insert(new Book(id, title, new Author(authorId), new Genre(genreId)));
     }
 
     @Override

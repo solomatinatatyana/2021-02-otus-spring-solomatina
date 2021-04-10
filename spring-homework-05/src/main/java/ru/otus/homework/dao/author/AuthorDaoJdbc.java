@@ -33,12 +33,12 @@ public class AuthorDaoJdbc implements AuthorDao{
     public Optional<Author> findById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
         return Optional.of(namedParameterJdbcOperations.queryForObject(
-                "select * from authors where id = :id", params, new AuthorMapper()));
+                "select id, fio from authors where id = :id", params, new AuthorMapper()));
     }
 
     @Override
     public List<Author> findAll() {
-        return namedParameterJdbcOperations.query("select * from authors", new AuthorMapper());
+        return namedParameterJdbcOperations.query("select id, fio from authors", new AuthorMapper());
     }
 
     @Override

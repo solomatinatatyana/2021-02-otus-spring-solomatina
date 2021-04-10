@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import ru.otus.homework.dao.book.BookDao;
 import ru.otus.homework.dao.book.BookDaoJdbc;
+import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
+import ru.otus.homework.domain.Genre;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +25,10 @@ public class BookDaoJdbcTest {
     private static final String EXISTING_FIRST_BOOK = "The lord of the rings";
     private static final int EXISTING_SECOND_BOOK_ID = 2;
     private static final String EXISTING_SECOND_BOOK = "War and peace";
-
+    private static final String EXISTING_FIRST_AUTHOR = "Tolkien";
+    private static final String EXISTING_SECOND_AUTHOR = "Tolstoy";
+    private static final String EXISTING_FIRST_GENRE = "Fantasy";
+    private static final String EXISTING_SECOND_GENRE = "Roman";
 
     @Autowired
     private BookDao bookDao;
@@ -31,16 +36,20 @@ public class BookDaoJdbcTest {
     @DisplayName("проверять добавление новой книги в БД")
     @Test
     public void shouldInsertNewBook() {
-        Book expectedBook = new Book(3, "testGenre", 2, 1);
+        Book expectedBook = new Book(3, "testBook",
+                new Author(2, EXISTING_SECOND_AUTHOR),
+                new Genre(2, EXISTING_SECOND_GENRE));
         bookDao.insert(expectedBook);
         Book actualBook = bookDao.findById(expectedBook.getId()).get();
-        assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
+        assertThat(expectedBook).usingRecursiveComparison().isEqualTo(actualBook);
     }
 
     @DisplayName("проверять нахождение книги по её id")
     @Test
     public void shouldReturnBookById() {
-        Book expectedBook = new Book(EXISTING_FIRST_BOOK_ID, EXISTING_FIRST_BOOK, 1, 1);
+        Book expectedBook = new Book(EXISTING_FIRST_BOOK_ID, EXISTING_FIRST_BOOK,
+                new Author(1, EXISTING_FIRST_AUTHOR),
+                new Genre(1, EXISTING_FIRST_GENRE));
         Book actualBook = bookDao.findById(expectedBook.getId()).get();
         assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
     }
@@ -48,7 +57,9 @@ public class BookDaoJdbcTest {
     @DisplayName("проверять нахождение книги по её title")
     @Test
     public void shouldReturnBooKByTitle() {
-        Book expectedBook = new Book(EXISTING_FIRST_BOOK_ID, EXISTING_FIRST_BOOK, 1, 1);
+        Book expectedBook = new Book(EXISTING_FIRST_BOOK_ID, EXISTING_FIRST_BOOK,
+                new Author(1,EXISTING_FIRST_AUTHOR),
+                new Genre(1, EXISTING_FIRST_GENRE));
         Book actualBook = bookDao.findByName(expectedBook.getTitle()).get();
         assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
     }
@@ -57,8 +68,12 @@ public class BookDaoJdbcTest {
     @Test
     public void shouldReturnExpectedBooksList() {
         List<Book> expectedBookList = Arrays.asList(
-                new Book(EXISTING_FIRST_BOOK_ID, EXISTING_FIRST_BOOK, 1, 1),
-                new Book(EXISTING_SECOND_BOOK_ID, EXISTING_SECOND_BOOK, 2, 2)
+                new Book(EXISTING_FIRST_BOOK_ID, EXISTING_FIRST_BOOK,
+                        new Author(1, EXISTING_FIRST_AUTHOR),
+                        new Genre(1, EXISTING_FIRST_GENRE)),
+                new Book(EXISTING_SECOND_BOOK_ID, EXISTING_SECOND_BOOK,
+                        new Author(2, EXISTING_SECOND_AUTHOR),
+                        new Genre(2, EXISTING_SECOND_GENRE))
         );
         List<Book> actualBookList = bookDao.findAll();
         assertThat(actualBookList).containsAll(expectedBookList);
@@ -68,7 +83,9 @@ public class BookDaoJdbcTest {
     @Test
     public void shouldUpdateBookById() {
         String expectedTitle = "updateTittle";
-        Book expectedBook = new Book(EXISTING_FIRST_BOOK_ID, expectedTitle, 1, 1);
+        Book expectedBook = new Book(EXISTING_FIRST_BOOK_ID, expectedTitle,
+                new Author(1, EXISTING_FIRST_AUTHOR),
+                new Genre(1, EXISTING_FIRST_GENRE));
         bookDao.updateTitleById(EXISTING_FIRST_BOOK_ID, expectedTitle);
         Book actualBook = bookDao.findById(expectedBook.getId()).get();
         assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
