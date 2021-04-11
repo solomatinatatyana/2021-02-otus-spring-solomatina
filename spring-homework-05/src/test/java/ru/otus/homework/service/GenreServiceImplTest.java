@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
-import ru.otus.homework.dao.genre.GenreDao;
+import ru.otus.homework.repository.genre.GenreRepositoryJpa;
 import ru.otus.homework.domain.Genre;
 import ru.otus.homework.exceptions.GenreException;
 import ru.otus.homework.service.genres.GenreServiceImpl;
@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 
-@TestPropertySource("classpath:application.yml")
+@TestPropertySource("classpath:application.yaml")
 @DisplayName("Сервис GenreService должен ")
 @SpringBootTest
 public class GenreServiceImplTest {
 
     @MockBean
-    private GenreDao genreDao;
+    private GenreRepositoryJpa genreRepositoryJpa;
     @Autowired
     private GenreServiceImpl genreService;
 
@@ -34,7 +34,7 @@ public class GenreServiceImplTest {
     @DisplayName("получать жанр книги по его id")
     @Test
     public void shouldReturnGenreById(){
-        given(genreDao.findById(1)).willReturn(Optional.of(new Genre(1,"test")));
+        given(genreRepositoryJpa.findById(1)).willReturn(Optional.of(new Genre(1,"test")));
         Genre actualGenre = genreService.getGenreById(1);
         assertThat(actualGenre).isNotNull();
     }
@@ -45,7 +45,7 @@ public class GenreServiceImplTest {
         List<Genre> expectedGenreList = Arrays.asList(
                 new Genre(1,"testGenre1"),
                 new Genre(2,"testGenre2"));
-        given(genreDao.findAll()).willReturn(expectedGenreList);
+        given(genreRepositoryJpa.findAll()).willReturn(expectedGenreList);
         List<Genre> actualGenreList = genreService.getAllGenres();
         assertThat(actualGenreList.equals(expectedGenreList));
     }
@@ -54,7 +54,7 @@ public class GenreServiceImplTest {
     @Test
     public void shouldThrowGenreException(){
         Throwable exception = assertThrows(GenreException.class,()->{
-            given(genreDao.findById(2)).willReturn(Optional.empty());
+            given(genreRepositoryJpa.findById(2)).willReturn(Optional.empty());
             genreService.getGenreById(2);
         });
         assertEquals("Genre with id [2] not found",exception.getMessage());

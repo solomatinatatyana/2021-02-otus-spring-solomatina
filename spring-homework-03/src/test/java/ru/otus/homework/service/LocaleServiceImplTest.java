@@ -1,8 +1,6 @@
 package ru.otus.homework.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
 import org.springframework.test.context.TestPropertySource;
-import ru.otus.homework.config.SurveyConfig;
-import ru.otus.homework.dao.SurveyDao;
 import ru.otus.homework.service.locale.LocaleServiceImpl;
 import ru.otus.homework.utils.LocaleProvider;
 

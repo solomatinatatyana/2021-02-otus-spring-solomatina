@@ -5,6 +5,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.homework.domain.Book;
+import ru.otus.homework.dto.BookComments;
 import ru.otus.homework.service.books.BookService;
 
 import java.util.List;
@@ -15,9 +16,10 @@ public class BookApplicationCommands {
     private final BookService bookService;
 
     private long id;
-    private String bookName;
+    private String bookTitle;
     private long authorId;
     private long genreId;
+    private String genre;
 
     @ShellMethod(value = "getting book by id", key = {"getBookById", "gbId"})
     public Book getBookById(@ShellOption long id){
@@ -25,10 +27,10 @@ public class BookApplicationCommands {
         return bookService.getBookById(id);
     }
 
-    @ShellMethod(value = "getting book by name", key = {"getBookByName", "gbn"})
-    public Book getBookByName(@ShellOption String bookName){
-        this.bookName = bookName;
-        return bookService.getBookByTitle(bookName);
+    @ShellMethod(value = "getting book by title", key = {"getBookByTitle", "gbt"})
+    public Book getBookByTitle(@ShellOption String bookTitle){
+        this.bookTitle = bookTitle;
+        return bookService.getBookByTitle(bookTitle);
     }
 
     @ShellMethod(value = "get all books", key = {"getAllBooks", "gab"})
@@ -42,7 +44,7 @@ public class BookApplicationCommands {
                            @ShellOption long authorId,
                            @ShellOption long genreId){
         this.id = id;
-        this.bookName = title;
+        this.bookTitle = title;
         this.authorId = authorId;
         this.genreId = genreId;
         bookService.insertBook(id, title, authorId, genreId);
@@ -61,5 +63,16 @@ public class BookApplicationCommands {
     @ShellMethod(value = "delete book by title", key = {"deleteBookByTitle", "dbt"})
     public void deleteBookById(@ShellOption String title){
         bookService.deleteBookByTitle(title);
+    }
+
+    @ShellMethod(value = "get all bookCommentsCount", key = {"getAllBooksCommentsCount", "gabcc"})
+    public List<BookComments> getAllBooksCommentsCount(){
+        return bookService.getBookCommentsCount();
+    }
+
+    @ShellMethod(value = "get all books with genres", key = {"getAllBooksWithGenres", "gabwg"})
+    public List<Book> getAllBooksWithGenres(@ShellOption String genre) {
+        this.genre = genre;
+        return bookService.getAllBooksWithGivenGenre(genre);
     }
 }

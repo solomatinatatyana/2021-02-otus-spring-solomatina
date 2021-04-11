@@ -17,7 +17,7 @@ public class AuthorApplicationCommands {
     private long id;
     private String fio;
 
-    @ShellMethod(value = "getting book by id", key = {"getAuthorById", "gaId"})
+    @ShellMethod(value = "getting author by id", key = {"getAuthorById", "gaId"})
     public Author getAuthorById(@ShellOption long id){
         this.id = id;
         return authorService.getAuthorById(id);

@@ -1,38 +1,41 @@
-package ru.otus.homework.dao;
+package ru.otus.homework.repository;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.dao.EmptyResultDataAccessException;
-import ru.otus.homework.dao.author.AuthorDaoJdbc;
 import ru.otus.homework.domain.Author;
+import ru.otus.homework.repository.author.AuthorRepositoryJpaImpl;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Тест класса AuthorDaoJdbc должен ")
-@JdbcTest
-@Import(AuthorDaoJdbc.class)
-public class AuthorDaoJdbcTest {
+@DisplayName("Тест класса AuthorRepositoryJpaImpl должен ")
+@DataJpaTest
+@Import(AuthorRepositoryJpaImpl.class)
+public class AuthorRepositoryJpaImplTest {
 
-    private static final int EXISTING_FIRST_AUTHOR_ID = 1;
+    private static final long EXISTING_FIRST_AUTHOR_ID = 1L;
     private static final String EXISTING_FIRST_AUTHOR_FIO = "Tolkien";
-    private static final int EXISTING_SECOND_AUTHOR_ID = 2;
+    private static final long EXISTING_SECOND_AUTHOR_ID = 2L;
     private static final String EXISTING_SECOND_AUTHOR_FIO = "Tolstoy";
 
+    @Autowired
+    private AuthorRepositoryJpaImpl authorDao;
 
     @Autowired
-    private AuthorDaoJdbc authorDao;
+    private TestEntityManager em;
 
     @DisplayName("проверять добавление нового автора книги в БД")
     @Test
     public void shouldInsertNewAuthor() {
         Author expectedAuthor = new Author(3, "testAuthor");
         authorDao.insert(expectedAuthor);
+        assertThat(expectedAuthor.getId()).isGreaterThan(0);
         Author actualAuthor = authorDao.findById(expectedAuthor.getId()).get();
         assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
     }
@@ -40,7 +43,7 @@ public class AuthorDaoJdbcTest {
     @DisplayName("проверять нахождение автора книги по его id")
     @Test
     public void shouldReturnAuthorById() {
-        Author expectedAuthor = new Author(EXISTING_FIRST_AUTHOR_ID, EXISTING_FIRST_AUTHOR_FIO);
+        Author expectedAuthor = em.find(Author.class, EXISTING_FIRST_AUTHOR_ID);
         Author actualAuthor = authorDao.findById(expectedAuthor.getId()).get();
         assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
    }
@@ -59,13 +62,14 @@ public class AuthorDaoJdbcTest {
     @DisplayName("проверять удаление автора по его id")
     @Test
     public void shouldDeleteCorrectAuthorById() {
-        assertThatCode(() -> authorDao.findById(EXISTING_SECOND_AUTHOR_ID))
-                .doesNotThrowAnyException();
+        Author secondAuthor = em.find(Author.class, EXISTING_SECOND_AUTHOR_ID);
+        assertThat(secondAuthor).isNotNull();
+        em.detach(secondAuthor);
 
         authorDao.deleteById(EXISTING_SECOND_AUTHOR_ID);
+        Author deletedAuthor = em.find(Author.class, EXISTING_SECOND_AUTHOR_ID);
 
-        assertThatThrownBy(() -> authorDao.findById(EXISTING_SECOND_AUTHOR_ID))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(deletedAuthor).isNull();
     }
 
 
