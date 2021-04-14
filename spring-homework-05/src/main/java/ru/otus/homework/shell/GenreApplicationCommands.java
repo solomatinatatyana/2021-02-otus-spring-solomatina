@@ -30,10 +30,10 @@ public class GenreApplicationCommands {
 
     @ShellMethod(value = "insert new genre", key = {"insertGenre", "ig"})
     public void insertGenre(@ShellOption long id,
-                           @ShellOption String name) {
+                            @ShellOption String name) {
         this.id = id;
         this.name = name;
-        genreService.insertGenre(id, name);
+        genreService.insertGenre(id,name);
     }
 
     @ShellMethod(value = "delete genre by id", key = {"deleteGenreById", "dgId"})

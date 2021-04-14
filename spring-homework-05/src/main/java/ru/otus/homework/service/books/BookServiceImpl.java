@@ -1,54 +1,71 @@
 package ru.otus.homework.service.books;
 
 import org.springframework.stereotype.Service;
-import ru.otus.homework.dao.book.BookDao;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Genre;
+import ru.otus.homework.dto.BookComments;
 import ru.otus.homework.exceptions.BookException;
+import ru.otus.homework.repository.book.BookRepositoryJpa;
+import ru.otus.homework.repository.genre.GenreRepositoryJpa;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService{
-    private final BookDao bookDao;
+    private final BookRepositoryJpa bookRepositoryJpa;
+    private final GenreRepositoryJpa genreRepositoryJpa;
 
-    public BookServiceImpl(BookDao bookDao) {
-        this.bookDao = bookDao;
+    public BookServiceImpl(BookRepositoryJpa bookRepositoryJpa, GenreRepositoryJpa genreRepositoryJpa) {
+        this.bookRepositoryJpa = bookRepositoryJpa;
+        this.genreRepositoryJpa = genreRepositoryJpa;
     }
 
+    @Transactional
     @Override
     public void insertBook(long id, String title, long authorId, long genreId) {
-        bookDao.insert(new Book(id, title, new Author(authorId), new Genre(genreId)));
-    }
-
-    @Override
-    public void updateBookTitleById(long id, String title) {
-        bookDao.updateTitleById(id, title);
+        bookRepositoryJpa.save(new Book(id, title, new Author(authorId), new Genre(genreId)));
     }
 
     @Override
     public Book getBookByTitle(String name) {
-        return bookDao.findByName(name).orElseThrow(()-> new BookException("Book with name [" + name + "] not found"));
+        return bookRepositoryJpa.findByName(name).orElseThrow(()-> new BookException("Book with name [" + name + "] not found"));
     }
 
     @Override
     public Book getBookById(long id) {
-        return bookDao.findById(id).orElseThrow(()-> new BookException("Book with id [" + id + "] not found"));
+        return bookRepositoryJpa.findById(id).orElseThrow(()-> new BookException("Book with id [" + id + "] not found"));
     }
 
     @Override
     public List<Book> getAllBooks() {
-        return bookDao.findAll();
+        return bookRepositoryJpa.findAll();
     }
 
+    @Transactional
     @Override
     public void deleteBookById(long id) {
-        bookDao.deleteById(id);
+        bookRepositoryJpa.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteBookByTitle(String name) {
+        bookRepositoryJpa.deleteByName(name);
     }
 
     @Override
-    public void deleteBookByTitle(String name) {
-        bookDao.deleteByName(name);
+    public List<BookComments> getBookCommentsCount() {
+        return bookRepositoryJpa.findBooksCommentsCount();
+    }
+
+    @Override
+    public List<Book> getAllBooksWithGivenGenre(String genre) {
+        Genre g =  genreRepositoryJpa.findByName(genre).orElseThrow(()->new BookException("Нет такого жанра!"));
+        List<Book> bookList = bookRepositoryJpa.findAll();
+        return bookList.stream().filter(book -> book.getGenre().equals(g)).collect(Collectors.toList());
     }
 }

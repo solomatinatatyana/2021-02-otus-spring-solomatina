@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2021-04-10--0001--author
+      author: tsolomatina
+      createTable:
+        tableName: authors
+        columns:
+          - column:
+              name: id
+              type: bigint
+              autoIncrement: true
+              constraints:
+                nullable: false
+                primaryKey: true
+                primaryKeyName: pk_authors
+          - column:
+              name: fio
+              type: varchar(255)
+  - changeSet:
+      id: 2021-04-10--0001--genre
+      author: tsolomatina
+      createTable:
+        tableName: genres
+        columns:
+          - column:
+              name: id
+              type: bigint
+              autoIncrement: true
+              constraints:
+                nullable: false
+                primaryKey: true
+                primaryKeyName: pk_genres
+          - column:
+              name: name
+              type: varchar(255)
+
+  - changeSet:
+      id: 2021-04-10--0001--book
+      author: tsolomatina
+      createTable:
+        tableName: books
+        columns:
+          - column:
+              name: id
+              type: bigint
+              autoIncrement: true
+              constraints:
+                nullable: false
+                primaryKey: true
+                primaryKeyName: pk_books
+          - column:
+              name: title
+              type: varchar(255)
+          - column:
+              name: author_id
+              type: bigint
+              constraints:
+                foreignKeyName: fk_authors_books
+                references: authors(id)
+          - column:
+              name: genre_id
+              type: bigint
+              constraints:
+                foreignKeyName: fk_genres_books
+                references: genres(id)

@@ -1,6 +1,16 @@
-insert into genres(id, `name`) values (1,'Фантастика'),
-                                      (2, 'Роман');
-insert into authors(id, fio) values (1,'Толкиен'),
-                                    (2, 'Толстой');
-insert into books (id, title, author_id, genre_id) values (1, 'Властелин колец', 1, 1),
-                                                          (2, 'Война и мир', 2, 2);
+
+insert into genres(`name`) values ('Фантастика'),
+                                      ('Роман');
+insert into authors(fio) values ('Джон Толкин'),
+                                    ('Лев Толстой'),
+                                    ('Роберт Желязны');
+insert into books (title, author_id, genre_id) values ('Властелин колец', 1, 1),
+                                                          ('Война и мир', 2, 2),
+                                                          ('Хоббит или туда и обратно',1,1),
+                                                          ('Девять принцев Амбера',3,1);
+insert into comments(comment_text, book_id) values ('Отличная книга. 10 из 10', 1),
+                                                      ('Нормальная. 5 из 10', 2),
+                                                      ('Хорошая книга. 8 из 10', 1),
+                                                      ('Выше среденего. 6 из 10', 2),
+                                                      ('Супер', 3),
+                                                      ('Понравилась',4);

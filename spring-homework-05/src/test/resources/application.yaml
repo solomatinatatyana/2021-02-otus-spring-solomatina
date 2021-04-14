@@ -2,6 +2,11 @@ spring:
   datasource:
     url: jdbc:h2:mem:testdb
     data: data-test.sql
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
   shell:
     interactive:
       enabled: false
