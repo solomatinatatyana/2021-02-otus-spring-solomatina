@@ -1,28 +1,26 @@
 package ru.otus.homework.repository;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
 import ru.otus.homework.domain.Genre;
-import ru.otus.homework.repository.comment.CommentRepositoryJpa;
-import ru.otus.homework.repository.comment.CommentRepositoryJpaImpl;
+import ru.otus.homework.repository.comment.CommentRepository;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Тест класса CommentRepositoryJpaImpl должен ")
+@DisplayName("Тест класса CommentRepository должен ")
 @DataJpaTest
-@Import(CommentRepositoryJpaImpl.class)
-public class CommentRepositoryJpaImplTest {
+public class CommentRepositoryTest {
     private static final long EXISTING_FIRST_COMMENT_ID = 1L;
     private static final long EXISTING_SECOND_COMMENT_ID = 2L;
     private static final long EXISTING_THIRD_COMMENT_ID = 3L;
@@ -47,7 +45,7 @@ public class CommentRepositoryJpaImplTest {
     private Book book2;
 
     @Autowired
-    private CommentRepositoryJpa commentRepositoryJpa;
+    private CommentRepository commentRepository;
 
     @Autowired
     private TestEntityManager em;
@@ -66,8 +64,8 @@ public class CommentRepositoryJpaImplTest {
     @Test
     public void shouldInsertNewCommentToBook() {
         Comment expectedComment = new Comment(0, "testComment", book1);
-        commentRepositoryJpa.save(expectedComment);
-        Comment actualComment = commentRepositoryJpa.findById(expectedComment.getId()).get();
+        commentRepository.saveAndFlush(expectedComment);
+        Comment actualComment = commentRepository.findById(expectedComment.getId()).get();
         assertThat(actualComment).usingRecursiveComparison().isEqualTo(actualComment);
     }
 
@@ -75,7 +73,7 @@ public class CommentRepositoryJpaImplTest {
     @Test
     public void shouldReturnCommentById() {
         Comment expectedComment = em.find(Comment.class, EXISTING_FIRST_COMMENT_ID);
-        Comment actualComment = commentRepositoryJpa.findById(expectedComment.getId()).get();
+        Comment actualComment = commentRepository.findById(expectedComment.getId()).get();
         assertThat(actualComment).usingRecursiveComparison().isEqualTo(expectedComment);
     }
 
@@ -88,8 +86,8 @@ public class CommentRepositoryJpaImplTest {
                 new Comment(EXISTING_THIRD_COMMENT_ID, EXISTING_THIRD_COMMENT,book1),
                 new Comment(EXISTING_FOURTH_COMMENT_ID, EXISTING_FOURTH_COMMENT,book2)
         );
-        List<Comment> actualCommentList = commentRepositoryJpa.findAll();
-        assertThat(actualCommentList).isEqualTo(expectedCommentList);
+        List<Comment> actualCommentList = commentRepository.findAll();
+        assertThat(assertThat(CollectionUtils.isEqualCollection(actualCommentList, expectedCommentList)));
     }
 
     @DisplayName("проверять удаление комментария по его id")
@@ -99,7 +97,7 @@ public class CommentRepositoryJpaImplTest {
         assertThat(secondComment).isNotNull();
         em.detach(secondComment);
 
-        commentRepositoryJpa.deleteById(EXISTING_SECOND_COMMENT_ID);
+        commentRepository.deleteById(EXISTING_SECOND_COMMENT_ID);
         Comment deletedComment = em.find(Comment.class, EXISTING_SECOND_COMMENT_ID);
 
         assertThat(deletedComment).isNull();

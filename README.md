@@ -11,4 +11,6 @@ spring-2021-02
 - ДЗ3 - spring-homework-03 (branch spring-homework-03)
 - ДЗ4 - spring-homework-04 (branch spring-homework-04)
 - ДЗ5 - spring-homework-05 (branch spring-homework-05)
+- ДЗ6 - spring-homework-05 (branch spring-homework-06)
+- ДЗ7 - spring-homework-05 (branch spring-homework-07)
 

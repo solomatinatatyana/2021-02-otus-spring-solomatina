@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import ru.otus.homework.domain.Author;
+import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
+import ru.otus.homework.domain.Genre;
 import ru.otus.homework.exceptions.CommentException;
-import ru.otus.homework.exceptions.GenreException;
-import ru.otus.homework.repository.comment.CommentRepositoryJpa;
+import ru.otus.homework.repository.comment.CommentRepository;
 import ru.otus.homework.service.comments.CommentService;
 
 import java.util.Arrays;
@@ -27,7 +29,7 @@ import static org.mockito.BDDMockito.given;
 public class CommentServiceImplTest {
 
     @MockBean
-    private CommentRepositoryJpa commentRepositoryJpa;
+    private CommentRepository commentRepository;
     @Autowired
     private CommentService commentService;
 
@@ -35,27 +37,38 @@ public class CommentServiceImplTest {
     @DisplayName("получать коммент книги по его id")
     @Test
     public void shouldReturnCommentById(){
-        /*given(commentRepositoryJpa.findById(1)).willReturn(Optional.of(new Comment(1,"test",1)));
-        Comment actualComment = commentService.getCommentById(1);
-        assertThat(actualComment).isNotNull();*/
+        given(commentRepository.findById(1L))
+                .willReturn(Optional.of(
+                        new Comment(1L,"test",
+                                new Book(1, "testBook",
+                                        new Author(1L, "testAuthor"),
+                                        new Genre(1L, "testGenre")))));
+        Comment actualComment = commentService.getCommentById(1L);
+        assertThat(actualComment).isNotNull();
     }
 
     @DisplayName("получать все комменты")
     @Test
     public void shouldReturnAllComments(){
-        /*List<Comment> expectedCommentList = Arrays.asList(
-                new Comment(1,"testComment1",1),
-                new Comment(2,"testComment2",2));
-        given(commentRepositoryJpa.findAll()).willReturn(expectedCommentList);
+        List<Comment> expectedCommentList = Arrays.asList(
+                new Comment(1,"testComment1",
+                        new Book(1, "testBook",
+                                new Author(1L, "testAuthor"),
+                                new Genre(1L, "testGenre"))),
+                new Comment(2,"testComment2",
+                        new Book(2, "testBook",
+                                new Author(2L, "testAuthor2"),
+                                new Genre(2L, "testGenre2"))));
+        given(commentRepository.findAll()).willReturn(expectedCommentList);
         List<Comment> actualCommentList = commentService.getAllComments();
-        assertThat(actualCommentList.equals(expectedCommentList));*/
+        assertThat(actualCommentList.equals(expectedCommentList));
     }
 
     @DisplayName("получать ошибку при запросе на несуществующий коммент")
     @Test
     public void shouldThrowCommentException(){
         Throwable exception = assertThrows(CommentException.class,()->{
-            given(commentRepositoryJpa.findById(2)).willReturn(Optional.empty());
+            given(commentRepository.findById(2L)).willReturn(Optional.empty());
             commentService.getCommentById(2);
         });
         assertEquals("Comment with id [2] not found",exception.getMessage());

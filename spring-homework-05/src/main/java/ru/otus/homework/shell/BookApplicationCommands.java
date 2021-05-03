@@ -18,8 +18,10 @@ public class BookApplicationCommands {
     private long id;
     private String bookTitle;
     private String genreName;
-    private long author;
-    private long genre;
+    private String authorName;
+    private long authorId;
+    private long genreId;
+    private long count;
 
 
     @ShellMethod(value = "getting book by id", key = {"getBookById", "gbId"})
@@ -45,10 +47,10 @@ public class BookApplicationCommands {
                            @ShellOption long authorId,
                            @ShellOption long genreId){
         this.id = id;
-        this.author = authorId;
-        this.genre = genreId;
+        this.authorId = authorId;
+        this.genreId = genreId;
         this.bookTitle = title;
-        bookService.insertBook(id,title,author,genre);
+        bookService.createBook(id, title,authorId,genreId);
     }
 
     @ShellMethod(value = "delete book by id", key = {"deleteBookById", "dbId"})
@@ -70,5 +72,23 @@ public class BookApplicationCommands {
     public List<Book> getAllBooksWithGenres(@ShellOption String genre) {
         this.genreName = genre;
         return bookService.getAllBooksWithGivenGenre(genre);
+    }
+
+    @ShellMethod(value = "get all books with author", key = {"getAllBooksWithAuthor", "gabwa"})
+    public List<Book> getAllBooksWithAuthor(@ShellOption String author) {
+        this.authorName = author;
+        return bookService.getAllBooksWithGivenAuthor(author);
+    }
+
+    @ShellMethod(value = "get all books not like genre", key = {"getAllBooksNotLikeGenres", "gabng"})
+    public List<Book> getAllBooksNotLikeGenres(@ShellOption String genre) {
+        this.genreName = genre;
+        return bookService.getAllBooksNotLikeGenre(genre);
+    }
+
+    @ShellMethod(value = "get All BooksComments Greater Then Count", key = {"getAllBooksCommentsGreaterThenCount", "gabgrc"})
+    public List<BookComments> getAllBooksByCountCommentsGreaterThanCount(@ShellOption long count) {
+        this.count = count;
+        return bookService.getAllBooksByCountCommentsGreaterOrEqualsThan(count);
     }
 }

@@ -5,38 +5,38 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
 import ru.otus.homework.exceptions.CommentException;
-import ru.otus.homework.repository.comment.CommentRepositoryJpa;
+import ru.otus.homework.repository.comment.CommentRepository;
 
 import java.util.List;
 
 @Service
 public class CommentServiceImpl implements CommentService{
-    private final CommentRepositoryJpa commentRepositoryJpa;
+    private final CommentRepository commentRepository;
 
-    public CommentServiceImpl(CommentRepositoryJpa commentRepositoryJpa) {
-        this.commentRepositoryJpa = commentRepositoryJpa;
+    public CommentServiceImpl(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
     }
 
     @Transactional
     @Override
     public void insertComment(long id, String commentText, long bookId) {
-        commentRepositoryJpa.save(new Comment(id, commentText, new Book(bookId)));
+        commentRepository.saveAndFlush(new Comment(id, commentText, new Book(bookId)));
     }
 
     @Override
     public Comment getCommentById(long id) {
-        return commentRepositoryJpa.findById(id).orElseThrow(()->new CommentException("Comment with id [" + id + "] not found"));
+        return commentRepository.findById(id).orElseThrow(()->new CommentException("Comment with id [" + id + "] not found"));
 
     }
 
     @Override
     public List<Comment> getAllComments() {
-        return commentRepositoryJpa.findAll();
+        return commentRepository.findAll();
     }
 
     @Transactional
     @Override
     public void deleteCommentById(long id) {
-        commentRepositoryJpa.deleteById(id);
+        commentRepository.deleteById(id);
     }
 }
