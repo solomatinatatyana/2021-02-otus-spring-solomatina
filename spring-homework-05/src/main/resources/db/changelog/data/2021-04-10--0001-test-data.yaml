@@ -1,0 +1,45 @@
+databaseChangeLog:
+- changeSet:
+    id: 2021-04-10--0001-test-data-authors
+    author: tsolomatina
+    context: test
+    runOnChange: true
+    loadUpdateData:
+      primaryKey: id
+      file: data/2021-04-10--0001-authors.csv
+      relativeToChangelogFile: true
+      separator: ;
+      quotChar: '"'
+      seperator: ';'
+      encoding: UTF-8
+      tableName: authors
+
+- changeSet:
+    id: 2021-04-10--0001-test-data-genres
+    author: tsolomatina
+    context: test
+    runOnChange: true
+    loadUpdateData:
+      primaryKey: id
+      file: data/2021-04-10--0001-genres.csv
+      relativeToChangelogFile: true
+      separator: ;
+      quotChar: '"'
+      seperator: ';'
+      encoding: UTF-8
+      tableName: genres
+
+- changeSet:
+    id: 2021-04-10--0001-test-data-books
+    author: tsolomatina
+    context: test
+    runOnChange: true
+    loadUpdateData:
+      primaryKey: id
+      file: data/2021-04-10--0001-books.csv
+      relativeToChangelogFile: true
+      separator: ;
+      quotChar: '"'
+      seperator: ';'
+      encoding: UTF-8
+      tableName: books

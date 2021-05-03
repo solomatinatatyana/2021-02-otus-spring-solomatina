@@ -16,8 +16,9 @@ public class AuthorApplicationCommands {
 
     private long id;
     private String fio;
+    private Author author;
 
-    @ShellMethod(value = "getting book by id", key = {"getAuthorById", "gaId"})
+    @ShellMethod(value = "getting author by id", key = {"getAuthorById", "gaId"})
     public Author getAuthorById(@ShellOption long id){
         this.id = id;
         return authorService.getAuthorById(id);
@@ -29,15 +30,15 @@ public class AuthorApplicationCommands {
     }
 
     @ShellMethod(value = "insert new author", key = {"insertAuthor", "ia"})
-    public void insertBook(@ShellOption long id,
-                           @ShellOption String fio) {
+    public void insertAuthor(@ShellOption long id,
+                             @ShellOption String fio) {
         this.id = id;
         this.fio = fio;
-        authorService.insertAuthor(id, fio);
+        authorService.insertAuthor(id,fio);
     }
 
     @ShellMethod(value = "delete author by id", key = {"deleteAuthorById", "daId"})
-    public void deleteBookById(@ShellOption long id){
+    public void deleteAuthorById(@ShellOption long id){
         authorService.deleteAuthorById(id);
     }
 

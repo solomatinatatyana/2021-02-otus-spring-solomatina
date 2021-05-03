@@ -1,0 +1,15 @@
+databaseChangeLog:
+- changeSet:
+    id: 2021-04-11--0001-test-data-comments
+    author: tsolomatina
+    context: test
+    runOnChange: true
+    loadUpdateData:
+      primaryKey: id
+      file: data/2021-04-11--0001-comments-books.csv
+      relativeToChangelogFile: true
+      separator: ;
+      quotChar: '"'
+      seperator: ';'
+      encoding: UTF-8
+      tableName: comments
