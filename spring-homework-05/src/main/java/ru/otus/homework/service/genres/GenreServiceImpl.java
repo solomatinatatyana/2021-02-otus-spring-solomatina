@@ -2,40 +2,40 @@ package ru.otus.homework.service.genres;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.homework.repository.genre.GenreRepositoryJpa;
 import ru.otus.homework.domain.Genre;
 import ru.otus.homework.exceptions.GenreException;
+import ru.otus.homework.repository.genre.GenreRepository;
 
 import java.util.List;
 
 @Service
 public class GenreServiceImpl implements GenreService{
-    private final GenreRepositoryJpa genreRepositoryJpa;
+    private final GenreRepository genreRepository;
 
-    public GenreServiceImpl(GenreRepositoryJpa genreRepositoryJpa) {
-        this.genreRepositoryJpa = genreRepositoryJpa;
+    public GenreServiceImpl(GenreRepository genreRepository) {
+        this.genreRepository = genreRepository;
     }
 
 
     @Transactional
     @Override
     public void insertGenre(long id, String name) {
-        genreRepositoryJpa.save(new Genre(id, name));
+        genreRepository.saveAndFlush(new Genre(id, name));
     }
 
     @Override
     public Genre getGenreById(long id) {
-        return genreRepositoryJpa.findById(id).orElseThrow(()->new GenreException("Genre with id [" + id + "] not found"));
+        return genreRepository.findById(id).orElseThrow(()->new GenreException("Genre with id [" + id + "] not found"));
     }
 
     @Override
     public List<Genre> getAllGenres() {
-        return genreRepositoryJpa.findAll();
+        return genreRepository.findAll();
     }
 
     @Transactional
     @Override
     public void deleteGenreById(long id) {
-        genreRepositoryJpa.deleteById(id);
+        genreRepository.deleteById(id);
     }
 }

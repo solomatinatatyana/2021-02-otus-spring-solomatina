@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.exceptions.AuthorException;
-import ru.otus.homework.repository.author.AuthorRepositoryJpa;
+import ru.otus.homework.repository.author.AuthorRepository;
 import ru.otus.homework.service.authors.AuthorServiceImpl;
 
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import static org.mockito.BDDMockito.given;
 public class AuthorServiceImplTest {
 
     @MockBean
-    private AuthorRepositoryJpa authorRepositoryJpa;
+    private AuthorRepository authorRepository;
 
     @Autowired
     private AuthorServiceImpl authorService;
@@ -35,7 +35,7 @@ public class AuthorServiceImplTest {
     @DisplayName("получать автора книги по его id")
     @Test
     public void shouldReturnAuthorById(){
-        given(authorRepositoryJpa.findById(1)).willReturn(Optional.of(new Author(1,"test")));
+        given(authorRepository.findById(1L)).willReturn(Optional.of(new Author(1,"test")));
         Author actualAuthor = authorService.getAuthorById(1);
         assertThat(actualAuthor).isNotNull();
     }
@@ -46,7 +46,7 @@ public class AuthorServiceImplTest {
         List<Author> expectedAuthorList = Arrays.asList(
                 new Author(1,"testAuthor1"),
                 new Author(2,"testAuthor2"));
-        given(authorRepositoryJpa.findAll()).willReturn(expectedAuthorList);
+        given(authorRepository.findAll()).willReturn(expectedAuthorList);
         List<Author> actualAuthorList = authorService.getAllAuthors();
         assertThat(actualAuthorList.equals(expectedAuthorList));
     }
@@ -55,7 +55,7 @@ public class AuthorServiceImplTest {
     @Test
     public void shouldThrowAuthorException(){
         Throwable exception = assertThrows(AuthorException.class,()->{
-            given(authorRepositoryJpa.findById(2)).willReturn(Optional.empty());
+            given(authorRepository.findById(2L)).willReturn(Optional.empty());
             authorService.getAuthorById(2);
         });
         assertEquals("Author with id [2] not found",exception.getMessage());

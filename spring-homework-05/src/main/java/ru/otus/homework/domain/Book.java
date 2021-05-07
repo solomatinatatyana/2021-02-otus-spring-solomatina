@@ -14,7 +14,12 @@ import java.util.List;
 @EqualsAndHashCode
 @Entity
 @Table(name = "books")
-@NamedEntityGraph(name = "authors-entity-graph", attributeNodes = {@NamedAttributeNode("author")})
+@NamedEntityGraph(name = "book-entity-graph",
+        attributeNodes = {
+        @NamedAttributeNode("author"),
+        @NamedAttributeNode("genre")
+    }
+)
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,15 +28,15 @@ public class Book {
     @Column(name = "title", nullable = false, unique = true)
     private String title;
 
-    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @ManyToOne(targetEntity = Genre.class, cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private List<Comment> comments;
 
     public Book(long id, String title, Author author, Genre genre) {
@@ -43,10 +48,6 @@ public class Book {
 
     public Book(long id) {
         this.id = id;
-    }
-
-    public Book(String title) {
-        this.title = title;
     }
 
     @Override

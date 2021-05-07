@@ -5,19 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import ru.otus.homework.domain.Author;
-import ru.otus.homework.repository.author.AuthorRepositoryJpaImpl;
+import ru.otus.homework.repository.author.AuthorRepository;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Тест класса AuthorRepositoryJpaImpl должен ")
+@DisplayName("Тест класса AuthorRepository должен ")
 @DataJpaTest
-@Import(AuthorRepositoryJpaImpl.class)
-public class AuthorRepositoryJpaImplTest {
+public class AuthorRepositoryTest {
 
     private static final long EXISTING_FIRST_AUTHOR_ID = 1L;
     private static final String EXISTING_FIRST_AUTHOR_FIO = "Tolkien";
@@ -25,7 +23,7 @@ public class AuthorRepositoryJpaImplTest {
     private static final String EXISTING_SECOND_AUTHOR_FIO = "Tolstoy";
 
     @Autowired
-    private AuthorRepositoryJpaImpl authorDao;
+    private AuthorRepository authorDao;
 
     @Autowired
     private TestEntityManager em;
@@ -34,7 +32,7 @@ public class AuthorRepositoryJpaImplTest {
     @Test
     public void shouldInsertNewAuthor() {
         Author expectedAuthor = new Author(3, "testAuthor");
-        authorDao.insert(expectedAuthor);
+        authorDao.saveAndFlush(expectedAuthor);
         assertThat(expectedAuthor.getId()).isGreaterThan(0);
         Author actualAuthor = authorDao.findById(expectedAuthor.getId()).get();
         assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
