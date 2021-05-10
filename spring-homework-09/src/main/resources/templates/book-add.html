@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="/webjars/bootstrap/5.0.0/css/bootstrap.min.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавление книги</title>
+</head>
+<body style="padding: 50px">
+    <h1>Форма добавления книги</h1>
+    <form th:action="@{/book}" th:method="post" th:object="${book}" action="book-add.html">
+        <div class="row mb-2 w-25">
+            <label class="main-lable" for="book-title">Введите название книги: </label>
+            <input class="form-control" placeholder="input your title" type="text", name="title" id="book-title" th:field="*{title}"/>
+            <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" th:errorclass="error"></span>
+        </div>
+
+        <div class="row mb-2 w-25">
+            <label class="main-lable" for="book-author">Введите автора: </label>
+            <input class="form-control" placeholder="input author's fio" type="text", name="fio" id="book-author" />
+        </div>
+
+        <div class="row mb-2 w-25">
+            <label class="main-lable" for="book-genre">Введите жанр: </label>
+            <input class="form-control" placeholder="input genre's name" type="text", name="name" id="book-genre" />
+        </div>
+
+        <div class="row w-25">
+            <button class="btn btn-primary mt-3" type="submit">Создать</button>
+        </div>
+    </form>
+</body>
+</html>
