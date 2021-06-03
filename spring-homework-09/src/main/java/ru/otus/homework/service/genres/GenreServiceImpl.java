@@ -19,19 +19,20 @@ public class GenreServiceImpl implements GenreService{
 
     @Transactional
     @Override
-    public void insertGenre(Genre genre) {
-        genreRepository.saveAndFlush(genre);
+    public void createGenre(Genre genre) {
+        genreRepository.insert(genre);
+        System.out.println("Genre ["+genre.getName()+"] created successfully");
     }
 
     @Override
-    public void updateGenreById(long id, Genre genre) {
+    public void updateGenreById(String id, Genre genre) {
         Genre genreToBeUpdated = getGenreById(id);
         genreToBeUpdated.setName(genre.getName());
-        genreRepository.saveAndFlush(genreToBeUpdated);
+        genreRepository.save(genreToBeUpdated);
     }
 
     @Override
-    public Genre getGenreById(long id) {
+    public Genre getGenreById(String id) {
         return genreRepository.findById(id).orElseThrow(()->new GenreException("Genre with id [" + id + "] not found"));
     }
 
@@ -48,7 +49,7 @@ public class GenreServiceImpl implements GenreService{
 
     @Transactional
     @Override
-    public void deleteGenreById(long id) {
+    public void deleteGenreById(String id) {
         genreRepository.deleteById(id);
     }
 }

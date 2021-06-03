@@ -1,28 +1,26 @@
 package ru.otus.homework.rest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.otus.homework.domain.Author;
-import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Genre;
 import ru.otus.homework.exceptions.BookException;
-import ru.otus.homework.rest.dto.AuthorDto;
 import ru.otus.homework.rest.dto.BookDto;
-import ru.otus.homework.rest.dto.GenreDto;
 import ru.otus.homework.rest.mappers.AuthorMapper;
 import ru.otus.homework.rest.mappers.BookMapper;
+import ru.otus.homework.rest.mappers.CommentMapper;
 import ru.otus.homework.rest.mappers.GenreMapper;
 import ru.otus.homework.service.authors.AuthorService;
 import ru.otus.homework.service.books.BookService;
 import ru.otus.homework.service.genres.GenreService;
 
-import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Controller
+@RestController
 public class BookController {
 
     private final BookService bookService;
@@ -31,80 +29,62 @@ public class BookController {
     private final BookMapper bookMapper;
     private final GenreMapper genreMapper;
     private final AuthorMapper authorMapper;
+    private final CommentMapper commentMapper;
 
 
     public BookController(BookService bookService, AuthorService authorService,
                           GenreService genreService, BookMapper bookMapper,
-                          GenreMapper genreMapper, AuthorMapper authorMapper) {
+                          GenreMapper genreMapper, AuthorMapper authorMapper, CommentMapper commentMapper) {
         this.bookService = bookService;
         this.authorService = authorService;
         this.genreService = genreService;
         this.bookMapper = bookMapper;
         this.genreMapper = genreMapper;
         this.authorMapper = authorMapper;
+        this.commentMapper = commentMapper;
     }
 
-    @GetMapping(value = "/book")
-    public String getBooks(Model model){
-        List<Book> books = bookService.getAllBooks();
-        model.addAttribute("books", books);
-        return "book-list";
-    }
-
-    @GetMapping(value = "/book/filter")
-    public String filterBooks(@RequestParam("author") String author,
-                              @RequestParam("genre") String genre, Model model){
-        List<Book> books;
+    @GetMapping(value = "/api/book")
+    public List<BookDto> getBooks(@RequestParam(required = false, name = "author") String author,
+                                  @RequestParam(required = false, name = "genre") String genre){
+        List<BookDto> books;
         if(author!=null && !author.isEmpty()){
-            books = bookService.getAllBooksWithGivenAuthor(author);
+            books = bookService.getAllBooksWithGivenAuthor(author).stream().map(bookMapper::toBookDto).collect(Collectors.toList());
         }else if(genre!=null && !genre.isEmpty()){
-            books = bookService.getAllBooksWithGivenGenre(genre);
+            books = bookService.getAllBooksWithGivenGenre(genre).stream().map(bookMapper::toBookDto).collect(Collectors.toList());
         }else{
-            books = bookService.getAllBooks();
+            books = bookService.getAllBooks().stream().map(bookMapper::toBookDto).collect(Collectors.toList());
         }
-        model.addAttribute("books", books);
-        return "book-list";
+        books.forEach(b->{
+            b.setComments(bookService.getCommentsByBookId(b.getId()).stream().map(commentMapper::toCommentDto).collect(Collectors.toList()));
+            b.setAvgRating(bookService.getAvgRatingComments(b.getId()));
+        });
+        return books;
     }
 
-    @GetMapping(value = "/book/{id}/edit")
-    public String editBookForm(@PathVariable("id") long id, Model model){
-        BookDto book = bookMapper.toBookDto(bookService.getBookById(id));
-        List<GenreDto> genreList = genreMapper.toGenreDtoList(genreService.getAllGenres());
-        List<AuthorDto> authorList = authorMapper.toAuthorDtoList(authorService.getAllAuthors());
-        model.addAttribute("book",book);
-        model.addAttribute("genres",genreList);
-        model.addAttribute("authors",authorList);
-        return "book-edit";
-    }
 
-    @PatchMapping(value = "/book/{id}")
-    public String saveBook(@PathVariable("id") long id,
-                           @ModelAttribute("book") BookDto book){
+    @PatchMapping(value = "/api/book/{id}")
+    public ResponseEntity<BookDto> saveBook(@PathVariable("id") String id,
+                           @RequestBody BookDto book){
         bookService.updateBookById(id, bookMapper.toBook(book));
-        return "redirect:/book";
+        return ResponseEntity.ok(book);
     }
 
-    @GetMapping(value = "/book/add")
-    public String showAddBookForm(Model model){
-        model.addAttribute("book",new Book());
-        return "book-add";
-    }
-
-    @PostMapping(value = "/book")
-    public String addBook(@Valid @ModelAttribute("book") BookDto book, BindingResult result, String fio, String name, Model model){
+    @PostMapping(value = "/api/book")
+    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto, BindingResult result){
         if(result.hasErrors()) {
-            return "book-add";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bookDto);
         }
-        Author author = authorService.getAuthorByName(fio);
-        Genre genre = genreService.getGenreByName(name);
-        bookService.createBook(bookMapper.toBook(book), author,genre);
-        return "redirect:/book";
+        Author author = authorService.getAuthorByName(bookDto.getAuthor().getFullName());
+        Genre genre = genreService.getGenreByName(bookDto.getGenre().getName());
+        bookService.createBook(bookMapper.toBook(bookDto), author,genre);
+        return ResponseEntity.ok(bookDto);
     }
 
-    @DeleteMapping(value = "/book/{id}")
-    public String deleteBook(@PathVariable("id") long id){
+    @DeleteMapping(value = "/api/book/{id}")
+    public ResponseEntity<String> deleteBook(@PathVariable("id") String id){
         bookService.deleteBookById(id);
-        return "redirect:/book";
+        return ResponseEntity.ok("book with id ["+ id +"] has been deleted!");
     }
 
     @ExceptionHandler(BookException.class)

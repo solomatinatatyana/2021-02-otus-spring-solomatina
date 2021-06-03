@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="/webjars/bootstrap/5.0.0/css/bootstrap.min.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Список жанров</title>
+</head>
+<body>
+<div>
+    <div th:replace="navbar::navbar"></div>
+</div>
+<div><h1>Список жанров:</h1></div>
+<form th:action="@{/genre}" th:method="post" action="genre-list.html">
+    <div class="input-group mb-3 w-25">
+        <input class="form-control" placeholder="input your genre" type="text", name="name" id="genre-name"/>
+        <button class="btn btn-primary btn-sm" type="submit">Добавить</button>
+    </div>
+</form>
+<div>
+    <table class="main-table">
+        <thead>
+        <tr>
+            <th>Жанр</th>
+            <th>Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="genre : ${genres}">
+            <td th:text="${genre.name}">Жанр</td>
+            <td>
+                <ul>
+                    <li>
+                        <a th:href="@{/genre/__${genre.id}__/edit}">
+                            <button class="mt-1 main-button btn btn-sm btn-secondary">Изменить</button>
+                        </a>
+                    </li>
+                    <li>
+                        <form th:action="@{/genre/{id}(id=${genre.id})}" th:method="delete">
+                            <button class="mt-1 main-button btn btn-sm btn-secondary" type="submit">Удалить</button>
+                        </form>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

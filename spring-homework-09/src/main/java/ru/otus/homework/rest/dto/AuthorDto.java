@@ -8,6 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthorDto {
-    private  long id;
-    private  String fullName;
+    private String id;
+    private String fullName;
+
+    public AuthorDto(String fullName) {
+        this.fullName = fullName;
+    }
 }
+
+

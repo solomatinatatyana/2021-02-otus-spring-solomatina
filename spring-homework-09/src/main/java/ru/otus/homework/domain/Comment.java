@@ -2,34 +2,40 @@ package ru.otus.homework.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "comments")
+@Document(collection = "comments")
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
-    @Column(name = "comment_text", nullable = false)
+    @Field(name = "comment_text")
     private String commentText;
 
-    @ManyToOne()
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
+    @Field(name = "rating")
+    private Integer rating;
+
+    public Comment(String commentText) {
+        this.commentText = commentText;
+    }
+
+    public Comment(String commentText, Integer rating) {
+        this.commentText = commentText;
+        this.rating = rating;
+    }
 
     @Override
     public String toString() {
         return "Comment{" +
-                "id=" + id +
-                ", Комментарий='" + commentText + '\'' +
-                ", book=" + book +
+                "id='" + id + '\'' +
+                ", commentText='" + commentText + '\'' +
+                ", rating=" + rating +
                 '}';
     }
 }

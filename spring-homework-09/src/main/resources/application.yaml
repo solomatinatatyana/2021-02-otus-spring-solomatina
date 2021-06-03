@@ -1,18 +1,24 @@
+server:
+  error:
+    whitelabel:
+      enabled: true
+  port: 9090
 spring:
   mvc:
     hiddenmethod:
       filter:
         enabled: true
-  datasource:
-    url: jdbc:h2:mem:testdb
-  jpa:
-    generate-ddl: false
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-server:
-  port: 9090
-  error:
-    whitelabel:
-      enabled: true
-
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: library
+mongock:
+  runner-type: "ApplicationRunner" # default
+  #runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.homework.mongock.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local

@@ -5,10 +5,10 @@ import ru.otus.homework.domain.Genre;
 import java.util.List;
 
 public interface GenreService {
-    void insertGenre(Genre genre);
-    void updateGenreById(long id, Genre genre);
-    Genre getGenreById(long id);
+    void createGenre(Genre genre);
+    void updateGenreById(String id, Genre genre);
+    Genre getGenreById(String id);
     Genre getGenreByName(String name);
     List<Genre> getAllGenres();
-    void deleteGenreById(long id);
+    void deleteGenreById(String id);
 }

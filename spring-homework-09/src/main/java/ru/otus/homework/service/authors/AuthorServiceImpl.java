@@ -1,6 +1,7 @@
 package ru.otus.homework.service.authors;
 
 
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.domain.Author;
@@ -14,25 +15,26 @@ public class AuthorServiceImpl implements AuthorService{
     private final AuthorRepository authorRepository;
 
 
-    public AuthorServiceImpl(AuthorRepository authorRepository) {
+    public AuthorServiceImpl(AuthorRepository authorRepository, MongoOperations mongoOperations) {
         this.authorRepository = authorRepository;
     }
 
     @Transactional
     @Override
     public void insertAuthor(Author author) {
-        authorRepository.saveAndFlush(author);
+        authorRepository.insert(author);
+        System.out.println("Author ["+author.getFullName()+"] created successfully");
     }
 
     @Override
-    public void updateAuthorById(long id, Author author) {
+    public void updateAuthorById(String id, Author author) {
         Author authorToBeUpdated = getAuthorById(id);
         authorToBeUpdated.setFullName(author.getFullName());
-        authorRepository.saveAndFlush(authorToBeUpdated);
+        authorRepository.save(authorToBeUpdated);
     }
 
     @Override
-    public Author getAuthorById(long id) {
+    public Author getAuthorById(String id) {
         return authorRepository.findById(id).orElseThrow(()->new AuthorException("Author with id [" + id + "] not found"));
     }
 
@@ -48,7 +50,7 @@ public class AuthorServiceImpl implements AuthorService{
 
     @Transactional
     @Override
-    public void deleteAuthorById(long id) {
+    public void deleteAuthorById(String id) {
         authorRepository.deleteById(id);
     }
 }
