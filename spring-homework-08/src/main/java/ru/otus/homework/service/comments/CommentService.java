@@ -7,6 +7,6 @@ import java.util.List;
 public interface CommentService {
     void insertComment(long id, String commentText, long bookId);
     Comment getCommentById(long id);
-    Iterable<Comment> getAllComments();
+    List<Comment> getAllComments();
     void deleteCommentById(long id);
 }

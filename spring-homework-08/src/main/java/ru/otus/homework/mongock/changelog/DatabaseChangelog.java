@@ -15,10 +15,10 @@ public class DatabaseChangelog {
         MongoCollection<Document> myCollection = db.getCollection("persons");
         var doc = new Document().append("name", "Lermontov");
         myCollection.insertOne(doc);
-    }*/
+    }
 
-    /*@ChangeSet(order = "003", id = "insertPushkin", author = "stvort")
+    @ChangeSet(order = "003", id = "insertPushkin", author = "stvort")
     public void insertPushkin(PersonRepository repository) {
-        repository.save(new Person("Pushkin"));*/
-    //}
+        repository.save(new Person("Pushkin"));
+    }*/
 }

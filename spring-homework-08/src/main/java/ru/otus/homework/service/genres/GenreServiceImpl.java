@@ -29,7 +29,7 @@ public class GenreServiceImpl implements GenreService{
     }
 
     @Override
-    public Iterable<Genre> getAllGenres() {
+    public List<Genre> getAllGenres() {
         return genreRepository.findAll();
     }
 

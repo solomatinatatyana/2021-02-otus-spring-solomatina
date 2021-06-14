@@ -24,7 +24,7 @@ public class GenreApplicationCommands {
     }
 
     @ShellMethod(value = "get all genre", key = {"getAllGenres", "gag"})
-    public Iterable<Genre> getAllGenres(){
+    public List<Genre> getAllGenres(){
         return genreService.getAllGenres();
     }
 

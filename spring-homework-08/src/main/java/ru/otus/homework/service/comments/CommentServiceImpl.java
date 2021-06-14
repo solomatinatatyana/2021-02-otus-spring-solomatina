@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public Iterable<Comment> getAllComments() {
+    public List<Comment> getAllComments() {
         return commentRepository.findAll();
     }
 

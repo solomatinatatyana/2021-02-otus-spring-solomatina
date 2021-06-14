@@ -26,7 +26,7 @@ public class CommentApplicationCommands {
     }
 
     @ShellMethod(value = "get all comments", key = {"getAllComments", "gac"})
-    public Iterable<Comment> getAllComments(){
+    public List<Comment> getAllComments(){
         return commentService.getAllComments();
     }
 

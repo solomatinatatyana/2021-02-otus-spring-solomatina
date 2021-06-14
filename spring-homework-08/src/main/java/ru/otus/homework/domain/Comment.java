@@ -18,7 +18,7 @@ public class Comment {
     @Field(name = "comment_text")
     private String commentText;
 
-    @Field
+
     private Book book;
 
     @Override
