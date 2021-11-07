@@ -30,11 +30,10 @@ public class AuthorApplicationCommands {
     }
 
     @ShellMethod(value = "insert new author", key = {"insertAuthor", "ia"})
-    public void insertAuthor(@ShellOption long id,
+    public void insertAuthor(
                              @ShellOption String fio) {
-        this.id = id;
         this.fio = fio;
-        authorService.insertAuthor(id,fio);
+        authorService.insertAuthor(fio);
     }
 
     @ShellMethod(value = "delete author by id", key = {"deleteAuthorById", "daId"})

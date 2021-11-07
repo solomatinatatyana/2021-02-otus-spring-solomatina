@@ -20,8 +20,8 @@ public class AuthorServiceImpl implements AuthorService{
 
     @Transactional
     @Override
-    public void insertAuthor(long id, String fio) {
-        authorRepository.save(new Author(id, fio));
+    public void insertAuthor(String fio) {
+        authorRepository.save(new Author(fio));
     }
 
     @Override
