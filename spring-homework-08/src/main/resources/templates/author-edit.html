@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="/webjars/bootstrap/5.0.0/css/bootstrap.min.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование автора</title>
+</head>
+<body style="padding: 50px">
+<form id="author-edit-form" th:action="@{/author/__${author.id}__}" th:method="patch" action="author-edit.html">
+    <h1>Информация об авторе:</h1>
+
+    <div class="row w-25">
+        <label for="id-input">ID:</label>
+        <input class="form-control" id="id-input" type="text" readonly="readonly" th:value="${author.id}" value="1"/>
+    </div>
+
+    <div class="row w-25">
+        <label for="holder-input">Автор:</label>
+        <input class="form-control" id="holder-input" name="fullName" type="text" th:value="${author.fullName}" value="author"/>
+    </div>
+
+    <div class="row w-25">
+        <button class="btn btn-primary mt-3" type="submit">Обновить</button>
+    </div>
+</form>
+</body>
+</html>
