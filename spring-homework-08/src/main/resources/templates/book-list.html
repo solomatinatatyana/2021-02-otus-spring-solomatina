@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="/webjars/bootstrap/5.0.0/css/bootstrap.min.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Список книг</title>
+    <style>
+        .main-table th, .main-table td{
+            border: 1px solid lightgray;
+            line-height: 1.1;
+            padding: 5px;
+        }
+
+        .main-table{
+            margin-top: 10px;
+        }
+
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        .main-button{
+            margin-bottom: 5px;
+            width: 115px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <div th:replace="navbar::navbar"></div>
+</div>
+<div><h1>Список книг:</h1></div>
+<form th:action="@{/book/filter}" th:method="get" id="filter-form" action="book-list.html">
+    <div class="input-group mb-3">
+        <input class="form-control" style="width: 50px" placeholder="input book's author" type="text" name="author" aria-describedby="button"/>
+        <input class="form-control" style="width: 50px" placeholder="input book's genre" type="text" name="genre" aria-describedby="button"/>
+        <button class="btn btn-primary btn-sm" type="submit" id="button">Найти</button>
+    </div>
+</form>
+<div>
+    <a th:href="@{/book/add}" href="book-add.html">
+        <button class="btn btn-primary">Добавить</button>
+    </a>
+</div>
+<div>
+    <table class="main-table">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Автор</th>
+            <th>Жанр</th>
+            <th>Комментарии</th>
+            <th>Средняя оценка</th>
+            <th>Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.title}">Книга</td>
+            <td th:text="${book.author.fullName}">Автор</td>
+            <td th:text="${book.genre.name}">Жанр</td>
+            <td>
+                <ul th:each="comment : ${book.comments}">
+                    <li th:text="${comment.commentText}"></li>
+                </ul>
+            </td>
+            <td th:align="center" th:text="${book.avgRating}">Средняя оценка</td>
+            <td>
+                <ul>
+                    <li>
+                        <a th:href="@{/book/__${book.id}__/edit}">
+                            <button class="mt-1 main-button btn btn-sm btn-secondary">Изменить</button>
+                        </a>
+                    </li>
+                    <li>
+                        <form th:action="@{/book/__${book.id}__}" th:method="delete">
+                            <button class="mt-1 main-button btn btn-sm btn-secondary" type="submit">Удалить</button>
+                        </form>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="/webjars/bootstrap/5.0.0/css/bootstrap.min.css">
+<head>
+    <meta charset="UTF-8">
+    <title>Список авторов</title>
+</head>
+<body>
+<div>
+    <div th:replace="navbar::navbar"></div>
+</div>
+<div><h1>Список авторов:</h1></div>
+<form th:action="@{/author}" th:method="post" action="author-list.html">
+    <div class="input-group mb-3 w-25">
+        <input class="form-control" placeholder="input your author" type="text", name="fullName" id="author-fio"/>
+        <button class="btn btn-primary btn-sm" type="submit">Добавить</button>
+    </div>
+</form>
+<div>
+    <table class="main-table">
+        <thead>
+        <tr>
+            <th>Автор</th>
+            <th>Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="author : ${authors}">
+            <td th:text="${author.fullName}">Жанр</td>
+            <td>
+                <ul>
+                    <li>
+                        <a th:href="@{/author/__${author.id}__/edit}">
+                            <button class="mt-1 main-button btn btn-sm btn-secondary">Изменить</button>
+                        </a>
+                    </li>
+                    <li>
+                        <form th:action="@{/author/{id}(id=${author.id})}" th:method="delete">
+                            <button class="mt-1 main-button btn btn-sm btn-secondary" type="submit">Удалить</button>
+                        </form>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
