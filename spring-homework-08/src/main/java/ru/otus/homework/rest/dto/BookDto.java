@@ -22,4 +22,10 @@ public class BookDto {
     public BookDto(@NotBlank(message = "title must not be blank") String title) {
         this.title = title;
     }
+
+    public BookDto(String id,
+                   @NotBlank(message = "title must not be blank") String title) {
+        this.id = id;
+        this.title = title;
+    }
 }

@@ -24,12 +24,15 @@ public class AuthorServiceImpl implements AuthorService{
     @Transactional
     @Override
     public void insertAuthor(Author author) {
-        authorRepository.createAuthor(author);
+        authorRepository.insert(author);
+        System.out.println("Author ["+author.getFullName()+"] created successfully");
     }
 
     @Override
     public void updateAuthorById(String id, Author author) {
-        authorRepository.updateAuthorById(id,author);
+        Author authorToBeUpdated = getAuthorById(id);
+        authorToBeUpdated.setFullName(author.getFullName());
+        authorRepository.save(authorToBeUpdated);
     }
 
     @Override

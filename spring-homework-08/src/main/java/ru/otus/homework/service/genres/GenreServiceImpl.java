@@ -20,12 +20,15 @@ public class GenreServiceImpl implements GenreService{
     @Transactional
     @Override
     public void createGenre(Genre genre) {
-        genreRepository.createGenre(genre);
+        genreRepository.insert(genre);
+        System.out.println("Genre ["+genre.getName()+"] created successfully");
     }
 
     @Override
     public void updateGenreById(String id, Genre genre) {
-        genreRepository.updateGenreById(id, genre);
+        Genre genreToBeUpdated = getGenreById(id);
+        genreToBeUpdated.setName(genre.getName());
+        genreRepository.save(genreToBeUpdated);
     }
 
     @Override

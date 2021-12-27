@@ -10,4 +10,10 @@ import lombok.NoArgsConstructor;
 public class AuthorDto {
     private String id;
     private String fullName;
+
+    public AuthorDto(String fullName) {
+        this.fullName = fullName;
+    }
 }
+
+

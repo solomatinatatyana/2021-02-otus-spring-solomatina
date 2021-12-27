@@ -45,12 +45,12 @@ public class GenreControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(new GenreController(genreService, genreMapper)).build();
     }
 
-    /*@DisplayName("получения всех жанров")
+    @DisplayName("получения всех жанров")
     @Test
     public void shouldReturnAllGenres() throws Exception {
         List<Genre> expectedList = Arrays.asList(
-                new Genre(1,"genre1"),
-                new Genre(2,"genre2"));
+                new Genre("genre1"),
+                new Genre("genre2"));
         given(genreService.getAllGenres()).willReturn(expectedList);
         this.mockMvc.perform(MockMvcRequestBuilders.get("/genre"))
                 .andDo(MockMvcResultHandlers.print())
@@ -63,8 +63,8 @@ public class GenreControllerTest {
     @DisplayName("получения одного жанра по id для редактирования")
     @Test
     public void shouldReturnOneAuthorForEdit() throws Exception {
-        Genre genre = new Genre(1, "genre");
-        given(genreService.getGenreById(1)).willReturn(genre);
+        Genre genre = new Genre("1" ,"genre");
+        given(genreService.getGenreById("1")).willReturn(genre);
         this.mockMvc.perform(MockMvcRequestBuilders.get("/genre/{id}/edit", 1))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -77,7 +77,7 @@ public class GenreControllerTest {
     @Test
     public void shouldUpdateExistingGenre() throws Exception {
         final String NEW_NAME = "newGenreName";
-        GenreDto expectedGenreDto = new GenreDto(1, NEW_NAME);
+        GenreDto expectedGenreDto = new GenreDto("1", NEW_NAME);
         this.mockMvc.perform(MockMvcRequestBuilders.patch("/genre/{id}", 1)
                 .param("name",NEW_NAME))
                 .andDo(MockMvcResultHandlers.print())
@@ -89,7 +89,7 @@ public class GenreControllerTest {
     @DisplayName("создания нового жанра")
     @Test
     public void shouldCreateNewGenre() throws Exception {
-        GenreDto genreDto = new GenreDto(0, "testGenre");
+        GenreDto genreDto = new GenreDto( "testGenre");
         this.mockMvc.perform(MockMvcRequestBuilders.post("/genre")
                 .param("name",genreDto.getName()))
                 .andDo(MockMvcResultHandlers.print())
@@ -110,11 +110,11 @@ public class GenreControllerTest {
     @DisplayName("получения ошибки при запросе несущетсвующего жанра по id")
     @Test
     public void shouldReturn404ByNotExistGenreId() throws Exception {
-        given(genreService.getGenreById(90)).willThrow(new GenreException("Genre with id [90] not found"));
+        given(genreService.getGenreById("90")).willThrow(new GenreException("Genre with id [90] not found"));
         this.mockMvc.perform(MockMvcRequestBuilders.get("/genre/{id}/edit", 90))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("/error/404"))
                 .andExpect(model().attribute("error",equalTo("Genre with id [90] not found")));
-    }*/
+    }
 }

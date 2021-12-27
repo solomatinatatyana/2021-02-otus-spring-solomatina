@@ -1,6 +1,5 @@
 package ru.otus.homework.rest;
 
-import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

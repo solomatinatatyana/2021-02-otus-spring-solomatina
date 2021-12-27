@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = BookMapper.class)
 public interface GenreMapper {
 
-    @Mapping(source="genre.books",target = "books", ignore=true)
+    //@Mapping(source="genre.books",target = "books", ignore=true)
     GenreDto toGenreDto(Genre genre);
 
     @InheritInverseConfiguration

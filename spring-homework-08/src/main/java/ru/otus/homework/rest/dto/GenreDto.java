@@ -13,7 +13,7 @@ public class GenreDto {
 
     private String id;
     private String name;
-    private List<BookDto> books;
+    //private List<BookDto> books;
 
     public GenreDto(String name) {
         this.name = name;
