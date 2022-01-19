@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.domain.Book;
+import ru.otus.homework.domain.Comment;
 import ru.otus.homework.domain.Genre;
 import ru.otus.homework.exceptions.BookException;
 import ru.otus.homework.rest.dto.BookDto;
@@ -21,8 +22,8 @@ import ru.otus.homework.service.authors.AuthorService;
 import ru.otus.homework.service.books.BookService;
 import ru.otus.homework.service.genres.GenreService;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
@@ -31,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("тест BookControllerTest должен проверять методы ")
 @WebMvcTest(BookController.class)
 @ContextConfiguration(classes = {
-        BookMapperImpl.class, GenreMapperImpl.class
+        BookMapperImpl.class, GenreMapperImpl.class, AuthorMapperImpl.class
 })
 public class BookControllerTest {
     @Autowired
@@ -50,7 +51,7 @@ public class BookControllerTest {
     @MockBean
     private GenreService genreService;
 
-    /*@BeforeEach
+    @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(new BookController(
                 bookService, authorService, genreService, bookMapper, genreMapper, authorMapper)).build();
@@ -60,12 +61,13 @@ public class BookControllerTest {
     @Test
     public void shouldReturnAllBooks() throws Exception {
         List<Book> expectedList = Arrays.asList(
-                new Book(1,"book1",
-                        new Author(1, "author1"),
-                        new Genre(1, "genre1")),
-                new Book(1,"book2",
-                        new Author(2, "author2"),
-                        new Genre(2, "genre2")));
+                new Book("book1",
+                        new Author("1", "author1"),
+                        new Genre("1", "genre1"),
+                        new Comment("CommentText")),
+                new Book("book2",
+                        new Author("2", "author2"),
+                        new Genre("2", "genre2")));
         given(bookService.getAllBooks()).willReturn(expectedList);
         this.mockMvc.perform(MockMvcRequestBuilders.get("/book"))
                 .andDo(MockMvcResultHandlers.print())
@@ -79,12 +81,14 @@ public class BookControllerTest {
     @Test
     public void shouldReturnBooksByAuthor() throws Exception {
         List<Book> expectedList = Arrays.asList(
-                new Book(1,"book1",
-                        new Author(1, "author1"),
-                        new Genre(1, "genre1")),
-                new Book(1,"book2",
-                        new Author(2, "author1"),
-                        new Genre(2, "genre2")));
+                new Book("book1",
+                        new Author("1", "author1"),
+                        new Genre("1", "genre1"),
+                        new Comment("CommentText1")),
+                new Book("book2",
+                        new Author("2", "author1"),
+                        new Genre("2", "genre2"),
+                        new Comment("CommentText2")));
         given(bookService.getAllBooksWithGivenAuthor("author1")).willReturn(expectedList);
         this.mockMvc.perform(MockMvcRequestBuilders.get("/book/filter")
                 .queryParam("author", "author1").queryParam("genre",""))
@@ -99,12 +103,12 @@ public class BookControllerTest {
     @Test
     public void shouldReturnBooksByGenre() throws Exception {
         List<Book> expectedList = Arrays.asList(
-                new Book(1,"book1",
-                        new Author(1, "author1"),
-                        new Genre(1, "genre1")),
-                new Book(1,"book2",
-                        new Author(2, "author2"),
-                        new Genre(2, "genre1")));
+                new Book("book1",
+                        new Author("1", "author1"),
+                        new Genre("1", "genre1")),
+                new Book("book2",
+                        new Author("2", "author2"),
+                        new Genre("2", "genre1")));
         given(bookService.getAllBooksWithGivenGenre("genre1")).willReturn(expectedList);
         this.mockMvc.perform(MockMvcRequestBuilders.get("/book/filter")
                 .queryParam("author", "").queryParam("genre","genre1"))
@@ -118,10 +122,10 @@ public class BookControllerTest {
     @DisplayName("получения одной книги по id для редактирования")
     @Test
     public void shouldReturnOneBookForEdit() throws Exception {
-        Book book = new Book(1,"book",
-                new Author(1, "author"),
-                new Genre(1, "genre"));
-        given(bookService.getBookById(1)).willReturn(book);
+        Book book = new Book("book",
+                new Author("1", "author"),
+                new Genre("1", "genre"));
+        given(bookService.getBookById("1")).willReturn(book);
         this.mockMvc.perform(MockMvcRequestBuilders.get("/book/{id}/edit", 1))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -134,7 +138,7 @@ public class BookControllerTest {
     @Test
     public void shouldUpdateExistingBook() throws Exception {
         final String NEW_NAME = "newBookName";
-        BookDto expectedBookDto = new BookDto(1,NEW_NAME);
+        BookDto expectedBookDto = new BookDto("1",NEW_NAME);
         this.mockMvc.perform(MockMvcRequestBuilders.patch("/book/{id}", 1)
                 .param("title",NEW_NAME))
                 .andDo(MockMvcResultHandlers.print())
@@ -158,7 +162,7 @@ public class BookControllerTest {
     @DisplayName("создания новой книги")
     @Test
     public void shouldCreateNewBook() throws Exception {
-        BookDto bookDto = new BookDto(0, "testBook");
+        BookDto bookDto = new BookDto( "testBook");
         this.mockMvc.perform(MockMvcRequestBuilders.post("/book")
                 .param("title",bookDto.getTitle()))
                 .andDo(MockMvcResultHandlers.print())
@@ -179,11 +183,11 @@ public class BookControllerTest {
     @DisplayName("получения ошибки при запросе несущетсвующей книги по id")
     @Test
     public void shouldReturn404ByNotExistBookId() throws Exception {
-        given(bookService.getBookById(90)).willThrow(new BookException("Book with id [90] not found"));
+        given(bookService.getBookById("90")).willThrow(new BookException("Book with id [90] not found"));
         this.mockMvc.perform(MockMvcRequestBuilders.get("/book/{id}/edit", 90))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("/error/404"))
                 .andExpect(model().attribute("error",equalTo("Book with id [90] not found")));
-    }*/
+    }
 }

@@ -28,11 +28,11 @@ public class Book {
     @DBRef
     private Genre genre;
 
-    @DBRef
+    @Field(name = "comments")
     private List<Comment> comments;
 
-    //@Field(name = "avg_rating")
-    private Integer avgRating;
+    @Field(name = "avg_rating")
+    private double avgRating;
 
     public Book(String title, Author author, Genre genre) {
         this.title = title;

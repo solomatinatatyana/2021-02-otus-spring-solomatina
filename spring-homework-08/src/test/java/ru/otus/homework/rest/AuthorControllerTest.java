@@ -41,7 +41,7 @@ public class AuthorControllerTest {
     @MockBean
     private AuthorService authorService;
 
-    /*@BeforeEach
+    @BeforeEach
     public void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(new AuthorController(authorService, authorMapper)).build();
     }
@@ -50,8 +50,8 @@ public class AuthorControllerTest {
     @Test
     public void shouldReturnAllAuthors() throws Exception {
         List<Author> expectedList = Arrays.asList(
-                new Author(1,"author1"),
-                new Author(2,"author2"));
+                new Author("author1"),
+                new Author("author2"));
         given(authorService.getAllAuthors()).willReturn(expectedList);
         this.mockMvc.perform(MockMvcRequestBuilders.get("/author"))
                 .andDo(MockMvcResultHandlers.print())
@@ -64,8 +64,8 @@ public class AuthorControllerTest {
     @DisplayName("получения одного автора по id для редактирования")
     @Test
     public void shouldReturnOneAuthorForEdit() throws Exception {
-        Author author = new Author(1, "author");
-        given(authorService.getAuthorById(1)).willReturn(author);
+        Author author = new Author("1", "author");
+        given(authorService.getAuthorById("1")).willReturn(author);
         this.mockMvc.perform(MockMvcRequestBuilders.get("/author/{id}/edit", 1))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
@@ -78,7 +78,7 @@ public class AuthorControllerTest {
     @Test
     public void shouldUpdateExistingAuthor() throws Exception {
         final String NEW_NAME = "newAuthorName";
-        AuthorDto expectedAuthorDto = new AuthorDto(1, NEW_NAME);
+        AuthorDto expectedAuthorDto = new AuthorDto("1",NEW_NAME);
         this.mockMvc.perform(MockMvcRequestBuilders.patch("/author/{id}", 1)
                 .param("fullName",NEW_NAME))
                 .andDo(MockMvcResultHandlers.print())
@@ -90,7 +90,7 @@ public class AuthorControllerTest {
     @DisplayName("создания нового автора")
     @Test
     public void shouldCreateNewAuthor() throws Exception {
-        AuthorDto authorDto = new AuthorDto(0, "testAuthor");
+        AuthorDto authorDto = new AuthorDto("testAuthor");
         this.mockMvc.perform(MockMvcRequestBuilders.post("/author")
                 .param("fullName",authorDto.getFullName()))
                 .andDo(MockMvcResultHandlers.print())
@@ -111,11 +111,11 @@ public class AuthorControllerTest {
     @DisplayName("получения ошибки при запросе несущетсвующего автора по id")
     @Test
     public void shouldReturn404ByNotExistAuthorId() throws Exception {
-        given(authorService.getAuthorById(90)).willThrow(new AuthorException("Author with id [90] not found"));
+        given(authorService.getAuthorById("90")).willThrow(new AuthorException("Author with id [90] not found"));
         this.mockMvc.perform(MockMvcRequestBuilders.get("/author/{id}/edit", 90))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("/error/404"))
                 .andExpect(model().attribute("error",equalTo("Author with id [90] not found")));
-    }*/
+    }
 }

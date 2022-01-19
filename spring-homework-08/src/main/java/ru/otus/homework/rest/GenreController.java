@@ -61,8 +61,8 @@ public class GenreController {
         return new ModelAndView("/error/404","error",ex.getMessage());
     }
 
-    @ExceptionHandler(GenreException.class)
+    /*@ExceptionHandler(GenreException.class)
     public ModelAndView handleInternalError(@ModelAttribute("ex") GenreException ex){
         return new ModelAndView("/error/500","error",ex.getMessage());
-    }
+    }*/
 }

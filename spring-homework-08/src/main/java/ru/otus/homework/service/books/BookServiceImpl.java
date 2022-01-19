@@ -65,11 +65,16 @@ public class BookServiceImpl implements BookService{
     @Transactional
     @Override
     public void deleteBookById(String id) {
-        bookRepository.deleteBookByIdWithComments(id);
+        bookRepository.deleteById(id);
     }
 
     @Override
-    public Integer getBookCommentsCount(String bookId) {
+    public List<BookComments> groupBy(String bookId) {
+        return bookRepository.groupBy(bookId);
+    }
+
+    @Override
+    public long getBookCommentsCount(String bookId) {
         return bookRepository.getBookCommentsByBookId(bookId).get(0).getCommentsCount();
     }
 
@@ -84,12 +89,7 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public Integer getAvgRatingComments(String bookId) {
+    public double getAvgRatingComments(String bookId) {
         return bookRepository.getBookCommentsByBookId(bookId).get(0).getAvgCommentsRating();
     }
-
-    /*@Override
-    public List<BookComments> getAllBooksByCountCommentsGreaterOrEqualsThan(long count) {
-        return bookRepository.findBooksByCountCommentsGreaterOrEqualsThan(count);
-    }*/
 }

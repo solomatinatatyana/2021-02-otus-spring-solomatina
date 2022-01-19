@@ -5,6 +5,6 @@ import ru.otus.homework.domain.Author;
 
 import java.util.Optional;
 
-public interface AuthorRepository extends MongoRepository<Author,String>, AuthorRepositoryCustom {
+public interface AuthorRepository extends MongoRepository<Author,String> {
     Optional<Author> findByFullName(String fio);
 }

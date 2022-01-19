@@ -15,8 +15,10 @@ public interface BookService {
     List<Book> getAllBooks();
     void deleteBookById(String id);
 
-    Integer getBookCommentsCount(String bookId);
+    List<BookComments> groupBy(String bookId);
+
+    long getBookCommentsCount(String bookId);
     List<Book> getAllBooksWithGivenGenre(String genre);
     List<Book> getAllBooksWithGivenAuthor(String author);
-    Integer getAvgRatingComments(String id);
+    double getAvgRatingComments(String id);
 }

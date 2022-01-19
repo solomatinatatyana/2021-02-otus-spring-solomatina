@@ -1,23 +1,42 @@
 package ru.otus.homework.repository;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
+import ru.otus.homework.domain.Author;
+import ru.otus.homework.domain.Book;
+import ru.otus.homework.domain.Genre;
+import ru.otus.homework.dto.BookComments;
+import ru.otus.homework.repository.author.AuthorRepository;
 import ru.otus.homework.repository.book.BookRepository;
+import ru.otus.homework.repository.genre.GenreRepository;
 import ru.otus.homework.util.RawResultPrinterImpl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
 @EnableConfigurationProperties
 @ComponentScan({"ru.otus.homework.repository"})
 @Import(RawResultPrinterImpl.class)
 @DisplayName("Тест класса BookRepository должен ")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BookRepositoryTest {
 
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private AuthorRepository authorRepository;
+    @Autowired
+    private GenreRepository genreRepository;
 
 
     private static final String EXISTING_FIRST_GENRE = "Фантастика";
@@ -27,155 +46,107 @@ public class BookRepositoryTest {
     private static final String EXISTING_FIRST_AUTHOR = "Джон Толкин";
     private static final String EXISTING_SECOND_AUTHOR = "Лев Толстой";
 
-    private static final int BOOK_COUNT = 2;
+    private static final int BOOK_COUNT = 1;
     private static final int FIRST_BOOK_COMMENTS_COUNT = 2;
 
-    /*@DisplayName("проверять добавление новой книги в БД")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    @DisplayName("проверять добавление новой книги в БД")
     @Test
     public void shouldInsertNewBook() {
-        Author author = new Author(1, EXISTING_SECOND_AUTHOR);
-        Genre genre = new Genre(1, EXISTING_SECOND_GENRE);
+        Author author = authorRepository.findByFullName(EXISTING_SECOND_AUTHOR).get();
+        Genre genre = genreRepository.findByName(EXISTING_SECOND_GENRE).get();
 
-        Book expectedBook = new Book(0, "testBook", author, genre);
-        bookRepository.saveAndFlush(expectedBook);
-        assertThat(expectedBook.getId()).isGreaterThan(0);
+        Book expectedBook = new Book("testBook", author, genre);
+        bookRepository.save(expectedBook);
+        assertThat(expectedBook.getId()).isNotBlank();
 
-        Book actualBook = em.find(Book.class, expectedBook.getId());
+        Book actualBook = bookRepository.findById(expectedBook.getId()).get();
         assertThat(actualBook).isNotNull().matches(s -> !s.getTitle().equals(""))
                 .matches(s -> s.getAuthor() != null)
                 .matches(s -> s.getGenre() != null);
-    }*/
+    }
 
-    /*@DisplayName("проверять нахождение книги по её id")
+    @DisplayName("проверять нахождение книги по её id")
     @Test
     public void shouldReturnBookById() {
-        Book expectedBook = em.find(Book.class, EXISTING_FIRST_BOOK_ID);
+        List<Book> books = bookRepository.findAll();
+        Book expectedBook = books.get(0);
         Book actualBook = bookRepository.findById(expectedBook.getId()).get();
         assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
-    }*/
+    }
 
-    /*@DisplayName("проверять нахождение книги по её title")
+    @DisplayName("проверять нахождение книги по её title")
     @Test
     public void shouldReturnBooKByTitle() {
-        Book expectedBook = em.find(Book.class, EXISTING_FIRST_BOOK_ID);
+        List<Book> books = bookRepository.findAll();
+        Book expectedBook = books.get(0);
         Book actualBook = bookRepository.findByTitle(expectedBook.getTitle()).get();
         assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
-    }*/
+    }
 
-    /*@DisplayName("проверять нахождение всех книг")
+    @DisplayName("проверять нахождение всех книг")
     @Test
     public void shouldReturnExpectedBooksList() {
-        List<Book> expectedBookList = Arrays.asList(
-                em.find(Book.class, EXISTING_FIRST_BOOK_ID),
-                em.find(Book.class, EXISTING_SECOND_BOOK_ID)
-        );
-        List<Book> actualBookList = bookRepository.findAll();
-        assertThat(actualBookList).containsAll(expectedBookList);
-    }*/
+        Author author1 = authorRepository.findByFullName(EXISTING_FIRST_AUTHOR).get();
+        Author author2 = authorRepository.findByFullName(EXISTING_SECOND_AUTHOR).get();
 
-   /* @DisplayName("проверять удаление книги по её id")
+        Genre genre1 = genreRepository.findByName(EXISTING_FIRST_GENRE).get();
+        Genre genre2 = genreRepository.findByName(EXISTING_SECOND_GENRE).get();
+
+        List<String> expectedBookTitleList = Arrays.asList(
+                new Book(EXISTING_FIRST_BOOK, author1, genre1).getTitle(),
+                new Book(EXISTING_SECOND_BOOK, author2, genre2).getTitle()
+        );
+
+        List<Book> actualBookList = bookRepository.findAll();
+        List<String> actualBookTitleList = new ArrayList<>();
+
+        actualBookList.forEach(book -> actualBookTitleList.add(book.getTitle()));
+        assertThat(actualBookTitleList).containsAll(expectedBookTitleList);
+    }
+
+    @DisplayName("проверять удаление книги по её id")
     @Test
     public void shouldDeleteCorrectBookById() {
-        Book secondBook = em.find(Book.class, EXISTING_SECOND_BOOK_ID);
-        assertThat(secondBook).isNotNull();
-        em.detach(secondBook);
+        List<Book> booksBeforeDeleting = bookRepository.findAll();
+        int countBeforeDeleting = booksBeforeDeleting.size();
 
-        bookRepository.deleteById(EXISTING_SECOND_BOOK_ID);
-        Book deletedGenre = em.find(Book.class, EXISTING_SECOND_BOOK_ID);
+        Book deletingBook = booksBeforeDeleting.get(0);
+        assertThat(deletingBook).isNotNull();
 
-        assertThat(deletedGenre).isNull();
-    }*/
+        bookRepository.deleteById(deletingBook.getId());
+        List<Book> booksAfterDeleting = bookRepository.findAll();
+        int countAfterDeleting = booksAfterDeleting.size();
 
-    /*@DisplayName("проверять удаление книги по её id с комментариями")
+        assertThat(countBeforeDeleting).isNotEqualTo(countAfterDeleting);
+        assertThat(deletingBook).isNotIn(booksAfterDeleting);
+    }
+
+    @DisplayName("проверять нахождение элементов BookCounts по id книги")
     @Test
-    public void shouldDeleteCorrectBookByIdWithComments() {
-        Book secondBook = em.find(Book.class, EXISTING_SECOND_BOOK_ID);
-        Comment secondComment = em.find(Comment.class, EXISTING_SECOND_COMMENT_ID);
-        assertThat(secondBook).isNotNull();
-        em.detach(secondBook);
-        em.detach(secondComment);
-
-        bookRepository.deleteBookByIdWithComments(EXISTING_SECOND_BOOK_ID);
-        Book deletedGenre = em.find(Book.class, EXISTING_SECOND_BOOK_ID);
-        Book deletedComment = em.find(Book.class, EXISTING_SECOND_COMMENT_ID);
-
-        assertThat(deletedGenre).isNull();
-        assertThat(deletedComment).isNull();
-    }*/
-
-    /*@DisplayName("проверять удаление книги по её title")
-    @Test
-    public void shouldDeleteCorrectBookByTitle() {
-        Book secondBook = em.find(Book.class, EXISTING_SECOND_BOOK_ID);
-        assertThat(secondBook).isNotNull();
-        em.detach(secondBook);
-
-        bookRepository.deleteBookByTitle(EXISTING_SECOND_BOOK);
-        Book deletedGenre = em.find(Book.class, EXISTING_SECOND_BOOK_ID);
-
-        assertThat(deletedGenre).isNull();
-    }*/
-
-    /*@DisplayName("проверять удаление книги по её title с комментариями")
-    @Test
-    public void shouldDeleteCorrectBookByTitleWithComments() {
-        Book secondBook = em.find(Book.class, EXISTING_SECOND_BOOK_ID);
-        Comment secondComment = em.find(Comment.class, EXISTING_SECOND_COMMENT_ID);
-        assertThat(secondBook).isNotNull();
-        em.detach(secondBook);
-        em.detach(secondComment);
-
-        bookRepository.deleteBookByTitleWithComments(EXISTING_SECOND_BOOK);
-        Book deletedGenre = em.find(Book.class, EXISTING_SECOND_BOOK_ID);
-        Book deletedComment = em.find(Book.class, EXISTING_SECOND_COMMENT_ID);
-
-        assertThat(deletedGenre).isNull();
-        assertThat(deletedComment).isNull();
-    }*/
-
-    /*@DisplayName("проверять нахождение количества комметариев по книгам")
-    @Test
-    void shouldFindBookCommentsCount() {
-        Book book1 = em.find(Book.class, EXISTING_FIRST_BOOK_ID);
-        List<BookComments> bookComments = bookRepository.findBooksCommentsCount();
+    void shouldFindBookCommentsAvgRating() {
+        List<Book> books = bookRepository.findAll();
+        Book book1 = books.get(0);
+        List<BookComments> bookComments = bookRepository.getBookCommentsByBookId(book1.getId());
         assertThat(bookComments).hasSize(BOOK_COUNT)
-                .contains(new BookComments(book1, FIRST_BOOK_COMMENTS_COUNT));
-    }*/
+                .contains(new BookComments(FIRST_BOOK_COMMENTS_COUNT,9));
+    }
 
-    /*@DisplayName("проверять нахождение всех книг по автору")
+    @DisplayName("проверять нахождение всех книг по автору")
     @Test
     void shouldFindBooksByAuthor() {
-        List<Book> expectedBookList = Arrays.asList(
-                em.find(Book.class, EXISTING_SECOND_BOOK_ID)
-        );
         List<Book> actualBookList = bookRepository.findAllByAuthor_FullName(EXISTING_SECOND_AUTHOR);
-        assertThat(actualBookList).containsAll(expectedBookList);
-    }*/
 
-    /*@DisplayName("проверять нахождение всех книг которые имеют жанр не равный заданному")
-    @Test
-    void shouldFindBooksByNotLikeGenre() {
-        List<Book> expectedBookList = Arrays.asList(
-                em.find(Book.class, EXISTING_SECOND_BOOK_ID)
-        );
-        List<Book> actualBookList = bookRepository.findAllByGenre_NameNotLike(EXISTING_FIRST_GENRE);
-        assertThat(actualBookList).containsAll(expectedBookList);
-    }*/
+        assertThat(actualBookList.get(0).getTitle()).isEqualTo(EXISTING_SECOND_BOOK);
+        assertThat(actualBookList.get(0).getAuthor().getFullName()).isEqualTo(EXISTING_SECOND_AUTHOR);
+    }
 
-    /*@DisplayName("проверять нахождение всех книг у которых количество комментариев больше или равно заданному числу")
+    @DisplayName("проверять нахождение всех книг по жанру")
     @Test
-    void shouldFindBooksCommentsByCommentCount() {
-        List<BookComments> expectedBookList = Arrays.asList(
-                new BookComments(new Book(EXISTING_FIRST_BOOK_ID, EXISTING_FIRST_BOOK,
-                        new Author(1L, EXISTING_FIRST_AUTHOR),
-                        new Genre(1L, EXISTING_FIRST_GENRE)),
-                        2),
-                new BookComments(new Book(EXISTING_SECOND_BOOK_ID, EXISTING_SECOND_BOOK,
-                        new Author(2L, EXISTING_SECOND_AUTHOR),
-                        new Genre(2L, EXISTING_SECOND_GENRE)),
-                        2)
-        );
-        List<BookComments> actualBookList = bookRepository.findBooksByCountCommentsGreaterOrEqualsThan(1L);
-        assertThat(CollectionUtils.isEqualCollection(actualBookList, expectedBookList));
-    }*/
+    void shouldFindBooksByGenre() {
+        List<Book> actualBookList = bookRepository.findAllByGenre_Name(EXISTING_SECOND_GENRE);
+
+        assertThat(actualBookList.get(0).getTitle()).isEqualTo(EXISTING_SECOND_BOOK);
+        assertThat(actualBookList.get(0).getGenre().getName()).isEqualTo(EXISTING_SECOND_GENRE);
+    }
 }

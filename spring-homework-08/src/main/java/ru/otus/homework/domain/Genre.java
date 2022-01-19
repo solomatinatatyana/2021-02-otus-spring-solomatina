@@ -20,8 +20,6 @@ public class Genre {
     @Field(name = "name")
     private  String name;
 
-    private List<Book> books;
-
     public Genre(String name) {
         this.name = name;
     }
