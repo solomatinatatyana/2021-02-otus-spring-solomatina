@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="/webjars/bootstrap/5.0.0/css/bootstrap.min.css">
+<script type="text/javascript" src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 <head>
     <meta charset="UTF-8">
     <title>Редактирование Книги</title>
@@ -16,8 +17,8 @@
     </div>
 
     <div class="row w-25">
-        <label for="holder-input">Название книги:</label>
-        <input class="form-control" id="holder-input" name="title" type="text" th:value="${book.title}" value="title"/>
+        <label for="title-input">Название книги:</label>
+        <input class="form-control" id="title-input" name="title" type="text" th:value="${book.title}" value="title"/>
     </div>
 
     <div class="row w-25">
@@ -44,6 +45,6 @@
         <button class="btn btn-primary mt-3" type="submit">Обновить</button>
     </div>
 </form>
-<script th:src="@{/webjars/bootstrap/5.0.0/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/book-edit.js}"></script>
 </body>
 </html>

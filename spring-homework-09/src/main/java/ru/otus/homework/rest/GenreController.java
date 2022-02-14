@@ -1,19 +1,19 @@
 package ru.otus.homework.rest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.otus.homework.domain.Genre;
-import ru.otus.homework.exceptions.BookException;
 import ru.otus.homework.exceptions.GenreException;
 import ru.otus.homework.rest.dto.GenreDto;
 import ru.otus.homework.rest.mappers.GenreMapper;
 import ru.otus.homework.service.genres.GenreService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Controller
+@RestController
 public class GenreController {
     private final GenreService genreService;
     private final GenreMapper genreMapper;
@@ -23,38 +23,37 @@ public class GenreController {
         this.genreMapper = genreMapper;
     }
 
-    @GetMapping(value = "/genre")
-    public String getGenres(Model model){
-        List<Genre> genres = genreService.getAllGenres();
-        model.addAttribute("genres", genres);
-        return "genre-list";
+    @GetMapping(value = "/api/genre")
+    public List<GenreDto> getGenres(){
+        return genreService.getAllGenres().stream().map(genreMapper::toGenreDto).collect(Collectors.toList());
     }
 
-    @GetMapping(value = "/genre/{id}/edit")
-    public String editGenre(@PathVariable("id") long id, Model model){
+    @GetMapping(value = "/api/genre/{id}/edit")
+    public ResponseEntity<GenreDto> editGenre(@PathVariable("id") String id){
         Genre genre = genreService.getGenreById(id);
-        model.addAttribute("genre", genre);
-        return "genre-edit";
+        if(genre == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(genreMapper.toGenreDto(genre), HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/genre/{id}")
-    public String saveGenre(@PathVariable("id") long id,
-                            @ModelAttribute("genre") GenreDto genre){
+    @PatchMapping(value = "/api/genre/{id}")
+    public ResponseEntity<GenreDto> saveGenre(@PathVariable("id") String id,
+                                            @RequestBody GenreDto genre){
         genreService.updateGenreById(id, genreMapper.toGenre(genre));
-        return "redirect:/genre";
+        return ResponseEntity.ok(genre);
     }
 
-    @PostMapping(value = "/genre")
-    public String addGenre(@ModelAttribute("genre") GenreDto genre, Model model){
-        genreService.insertGenre(genreMapper.toGenre(genre));
-        model.addAttribute("genre", genre);
-        return "redirect:/genre";
+    @PostMapping(value = "/api/genre")
+    public ResponseEntity<GenreDto> addGenre(@RequestBody GenreDto genre){
+        genreService.createGenre(genreMapper.toGenre(genre));
+        return ResponseEntity.ok(genre);
     }
 
-    @DeleteMapping(value = "/genre/{id}")
-    public String deleteGenre(@PathVariable("id") long id){
+    @DeleteMapping(value = "/api/genre/{id}")
+    public ResponseEntity<String> deleteGenre(@PathVariable("id") String id){
         genreService.deleteGenreById(id);
-        return "redirect:/genre";
+        return ResponseEntity.ok("genre with id ["+ id +"] deleted!");
     }
 
     @ExceptionHandler(GenreException.class)

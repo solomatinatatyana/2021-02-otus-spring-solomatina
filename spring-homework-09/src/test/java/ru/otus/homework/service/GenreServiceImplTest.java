@@ -34,8 +34,8 @@ public class GenreServiceImplTest {
     @DisplayName("получать жанр книги по его id")
     @Test
     public void shouldReturnGenreById(){
-        given(genreRepository.findById(1L)).willReturn(Optional.of(new Genre(1,"test")));
-        Genre actualGenre = genreService.getGenreById(1);
+        given(genreRepository.findById("1")).willReturn(Optional.of(new Genre("1","test")));
+        Genre actualGenre = genreService.getGenreById("1");
         assertThat(actualGenre).isNotNull();
     }
 
@@ -43,8 +43,8 @@ public class GenreServiceImplTest {
     @Test
     public void shouldReturnAllGenres(){
         List<Genre> expectedGenreList = Arrays.asList(
-                new Genre(1,"testGenre1"),
-                new Genre(2,"testGenre2"));
+                new Genre("1","testGenre1"),
+                new Genre("2","testGenre2"));
         given(genreRepository.findAll()).willReturn(expectedGenreList);
         List<Genre> actualGenreList = genreService.getAllGenres();
         assertThat(actualGenreList.equals(expectedGenreList));
@@ -54,8 +54,8 @@ public class GenreServiceImplTest {
     @Test
     public void shouldThrowGenreException(){
         Throwable exception = assertThrows(GenreException.class,()->{
-            given(genreRepository.findById(2L)).willReturn(Optional.empty());
-            genreService.getGenreById(2);
+            given(genreRepository.findById("2")).willReturn(Optional.empty());
+            genreService.getGenreById("2");
         });
         assertEquals("Genre with id [2] not found",exception.getMessage());
     }

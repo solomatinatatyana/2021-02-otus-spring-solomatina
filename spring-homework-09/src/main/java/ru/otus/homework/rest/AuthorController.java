@@ -1,19 +1,19 @@
 package ru.otus.homework.rest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.exceptions.AuthorException;
-import ru.otus.homework.exceptions.BookException;
 import ru.otus.homework.rest.dto.AuthorDto;
 import ru.otus.homework.rest.mappers.AuthorMapper;
 import ru.otus.homework.service.authors.AuthorService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Controller
+@RestController
 public class AuthorController {
     private final AuthorService authorService;
     private final AuthorMapper authorMapper;
@@ -23,37 +23,37 @@ public class AuthorController {
         this.authorMapper = authorMapper;
     }
 
-    @GetMapping(value = "/author")
-    public String getAuthors(Model model){
-        List<Author> authors = authorService.getAllAuthors();
-        model.addAttribute("authors", authors);
-        return "author-list";
+    @GetMapping(value = "/api/author")
+    public List<AuthorDto> getAuthors(){
+        return authorService.getAllAuthors().stream().map(authorMapper::toAuthorDto).collect(Collectors.toList());
     }
 
-    @GetMapping(value = "/author/{id}/edit")
-    public String editAuthor(@PathVariable("id") long id, Model model){
+    @GetMapping(value = "/api/author/{id}/edit")
+    public ResponseEntity<AuthorDto> editAuthor(@PathVariable("id") String id){
         Author author = authorService.getAuthorById(id);
-        model.addAttribute("author", author);
-        return "author-edit";
+        if(author == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(authorMapper.toAuthorDto(author), HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/author/{id}")
-    public String saveAuthor(@PathVariable("id") long id,
-                             @ModelAttribute("author") AuthorDto authorDto){
+    @PatchMapping(value = "/api/author/{id}")
+    public ResponseEntity<AuthorDto> saveAuthor(@PathVariable("id") String id,
+                             @RequestBody AuthorDto authorDto){
         authorService.updateAuthorById(id, authorMapper.toAuthor(authorDto));
-        return "redirect:/author";
+        return ResponseEntity.ok(authorDto);
     }
 
-    @PostMapping(value = "/author")
-    public String addAuthor(@ModelAttribute("author") AuthorDto author){
+    @PostMapping(value = "/api/author")
+    public ResponseEntity<AuthorDto> addAuthor(@RequestBody AuthorDto author){
         authorService.insertAuthor(authorMapper.toAuthor(author));
-        return "redirect:/author";
+        return ResponseEntity.ok(author);
     }
 
-    @DeleteMapping(value = "/author/{id}")
-    public String deleteAuthor(@PathVariable("id") long id){
+    @DeleteMapping(value = "/api/author/{id}")
+    public ResponseEntity<String> deleteAuthor(@PathVariable("id") String id){
         authorService.deleteAuthorById(id);
-        return "redirect:/author";
+        return ResponseEntity.ok("author with id ["+ id +"] deleted!");
     }
 
     @ExceptionHandler(AuthorException.class)

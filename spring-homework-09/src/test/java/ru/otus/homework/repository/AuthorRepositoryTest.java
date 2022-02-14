@@ -3,72 +3,81 @@ package ru.otus.homework.repository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.homework.domain.Author;
 import ru.otus.homework.repository.author.AuthorRepository;
+import ru.otus.homework.util.RawResultPrinterImpl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DataMongoTest
+@EnableConfigurationProperties
+@ComponentScan({"ru.otus.homework.repository"})
+@Import(RawResultPrinterImpl.class)
 @DisplayName("Тест класса AuthorRepository должен ")
-@DataJpaTest
 public class AuthorRepositoryTest {
 
-    private static final long EXISTING_FIRST_AUTHOR_ID = 1L;
-    private static final String EXISTING_FIRST_AUTHOR_FIO = "Tolkien";
-    private static final long EXISTING_SECOND_AUTHOR_ID = 2L;
-    private static final String EXISTING_SECOND_AUTHOR_FIO = "Tolstoy";
+    private static final String EXISTING_FIRST_AUTHOR_FIO = "Джон Толкин";
+    private static final String EXISTING_SECOND_AUTHOR_FIO = "Лев Толстой";
 
     @Autowired
-    private AuthorRepository authorDao;
+    private AuthorRepository authorRepository;
 
-    @Autowired
-    private TestEntityManager em;
-
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @DisplayName("проверять добавление нового автора книги в БД")
     @Test
     public void shouldInsertNewAuthor() {
-        Author expectedAuthor = new Author(3, "testAuthor");
-        authorDao.saveAndFlush(expectedAuthor);
-        assertThat(expectedAuthor.getId()).isGreaterThan(0);
-        Author actualAuthor = authorDao.findById(expectedAuthor.getId()).get();
+        Author expectedAuthor = new Author("testAuthor");
+        authorRepository.save(expectedAuthor);
+        assertThat(expectedAuthor.getId()).isNotBlank();
+        Author actualAuthor = authorRepository.findById(expectedAuthor.getId()).get();
         assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
     }
 
     @DisplayName("проверять нахождение автора книги по его id")
     @Test
     public void shouldReturnAuthorById() {
-        Author expectedAuthor = em.find(Author.class, EXISTING_FIRST_AUTHOR_ID);
-        Author actualAuthor = authorDao.findById(expectedAuthor.getId()).get();
+        List<Author> authors = authorRepository.findAll();
+        Author expectedAuthor = authors.get(0);
+        Author actualAuthor = authorRepository.findById(expectedAuthor.getId()).get();
         assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
    }
 
     @DisplayName("проверять нахождение всех авторов")
     @Test
     public void shouldReturnExpectedAuthorsList() {
-        List<Author> expectedAuthorList = Arrays.asList(
-                new Author(EXISTING_FIRST_AUTHOR_ID, EXISTING_FIRST_AUTHOR_FIO),
-                new Author(EXISTING_SECOND_AUTHOR_ID, EXISTING_SECOND_AUTHOR_FIO)
+        List<String> expectedAuthorFioList = Arrays.asList(
+                new Author(EXISTING_FIRST_AUTHOR_FIO).getFullName(),
+                new Author(EXISTING_SECOND_AUTHOR_FIO).getFullName()
         );
-        List<Author> actualAuthorList = authorDao.findAll();
-        assertThat(actualAuthorList).containsAll(expectedAuthorList);
+        List<Author> actualAuthorList = authorRepository.findAll();
+        List<String> actualAuthorFioList = new ArrayList<>();
+        actualAuthorList.forEach(author -> actualAuthorFioList.add(author.getFullName()));
+        assertThat(actualAuthorFioList).containsAll(expectedAuthorFioList);
     }
 
     @DisplayName("проверять удаление автора по его id")
     @Test
     public void shouldDeleteCorrectAuthorById() {
-        Author secondAuthor = em.find(Author.class, EXISTING_SECOND_AUTHOR_ID);
-        assertThat(secondAuthor).isNotNull();
-        em.detach(secondAuthor);
+        List<Author> authorsBeforeDeleting = authorRepository.findAll();
+        int countBeforeDeleting = authorsBeforeDeleting.size();
 
-        authorDao.deleteById(EXISTING_SECOND_AUTHOR_ID);
-        Author deletedAuthor = em.find(Author.class, EXISTING_SECOND_AUTHOR_ID);
+        Author deletingAuthor = authorsBeforeDeleting.get(0);
+        assertThat(deletingAuthor).isNotNull();
 
-        assertThat(deletedAuthor).isNull();
+        authorRepository.deleteById(deletingAuthor.getId());
+        List<Author> authorsAfterDeleting = authorRepository.findAll();
+        int countAfterDeleting = authorsAfterDeleting.size();
+
+        assertThat(countBeforeDeleting).isNotEqualTo(countAfterDeleting);
+        assertThat(deletingAuthor).isNotIn(authorsAfterDeleting);
     }
-
-
 }

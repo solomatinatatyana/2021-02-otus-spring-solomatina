@@ -2,60 +2,68 @@ package ru.otus.homework.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "books")
-@NamedEntityGraph(name = "book-entity-graph",
-        attributeNodes = {
-        @NamedAttributeNode("author"),
-        @NamedAttributeNode("genre")
-    }
-)
+@Document(collection = "books")
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
-    @Column(name = "title", nullable = false, unique = true)
+    @Field(name = "title")
     private String title;
 
-    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_id")
+    @DBRef
     private Author author;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "genre_id")
+    @DBRef
     private Genre genre;
 
-    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    @Field(name = "comments")
     private List<Comment> comments;
 
-    public Book(long id, String title, Author author, Genre genre) {
-        this.id = id;
+    @Field(name = "avg_rating")
+    private double avgRating;
+
+    public Book(String title, Author author, Genre genre) {
         this.title = title;
         this.author = author;
         this.genre = genre;
     }
 
-    public Book(long id) {
-        this.id = id;
+    public Book(String title, Author author, Genre genre, Comment... comments) {
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.comments = Arrays.asList(comments);
     }
+
+    public Book(String id, String title, Author author, Genre genre, Comment... comments) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.comments = Arrays.asList(comments);
+    }
+
 
     @Override
     public String toString() {
-        return "Id="+ id +
-                ", Название='" + title + '\'' +
-                ", автор=" + author.getFullName() +
-                ", Жанр=" + genre.getName()+"}";
+        return "Book{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", author=" + author +
+                ", genre=" + genre +
+                ", comments=" + comments +
+                '}';
     }
 }

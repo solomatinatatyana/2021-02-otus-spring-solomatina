@@ -12,18 +12,20 @@ import java.util.List;
 @AllArgsConstructor
 public class BookDto {
 
-    private long id;
+    private String id;
     @NotBlank(message = "title must not be blank")
     private String title;
     private AuthorDto author;
     private GenreDto genre;
     private List<CommentDto> comments;
+    private double avgRating;
 
-    public BookDto(long id) {
-        this.id = id;
+    public BookDto(@NotBlank(message = "title must not be blank") String title) {
+        this.title = title;
     }
 
-    public BookDto(long id, @NotBlank(message = "title must not be blank") String title) {
+    public BookDto(String id,
+                   @NotBlank(message = "title must not be blank") String title) {
         this.id = id;
         this.title = title;
     }

@@ -1,49 +1,42 @@
 package ru.otus.homework.repository;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import ru.otus.homework.domain.Author;
-import ru.otus.homework.domain.Book;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.homework.domain.Genre;
 import ru.otus.homework.repository.genre.GenreRepository;
+import ru.otus.homework.util.RawResultPrinterImpl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DataMongoTest
+@EnableConfigurationProperties
+@ComponentScan({"ru.otus.homework.repository"})
+@Import(RawResultPrinterImpl.class)
 @DisplayName("Тест класса GenreRepository должен ")
-@DataJpaTest
 public class GenreRepositoryTest {
-    private static final long EXISTING_FIRST_GENRE_ID = 1L;
-    private static final String EXISTING_FIRST_GENRE = "Fantasy";
-    private static final long EXISTING_SECOND_GENRE_ID = 2L;
-    private static final String EXISTING_SECOND_GENRE = "Roman";
-
-    private static final long EXISTING_FIRST_BOOK_ID = 1L;
-    private static final long EXISTING_SECOND_BOOK_ID = 2L;
-    private static final long EXISTING_FIRST_AUTHOR_ID = 1L;
-    private static final long EXISTING_SECOND_AUTHOR_ID = 2L;
-    private static final String EXISTING_FIRST_BOOK = "The lord of the rings";
-    private static final String EXISTING_SECOND_BOOK = "War and peace";
-    private static final String EXISTING_FIRST_AUTHOR = "Tolkien";
-    private static final String EXISTING_SECOND_AUTHOR = "Tolstoy";
+    private static final String EXISTING_FIRST_GENRE = "Фантастика";
+    private static final String EXISTING_SECOND_GENRE = "Роман";
 
     @Autowired
     private GenreRepository genreRepository;
 
-    @Autowired
-    private TestEntityManager em;
-
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @DisplayName("проверять добавление нового жанра книги в БД")
     @Test
     public void shouldInsertNewGenre() {
-        Genre expectedGenre = new Genre(3, "testGenre");
-        genreRepository.saveAndFlush(expectedGenre);
+        Genre expectedGenre = new Genre("testGenre");
+        genreRepository.save(expectedGenre);
+        assertThat(expectedGenre.getId()).isNotBlank();
         Genre actualGenre = genreRepository.findById(expectedGenre.getId()).get();
         assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
     }
@@ -51,7 +44,8 @@ public class GenreRepositoryTest {
     @DisplayName("проверять нахождение жанра книги по его id")
     @Test
     public void shouldReturnGenreById() {
-        Genre expectedGenre = em.find(Genre.class, EXISTING_FIRST_GENRE_ID);
+        List<Genre> genres = genreRepository.findAll();
+        Genre expectedGenre = genres.get(0);
         Genre actualGenre = genreRepository.findById(expectedGenre.getId()).get();
         assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
     }
@@ -59,31 +53,30 @@ public class GenreRepositoryTest {
     @DisplayName("проверять нахождение всех жанров")
     @Test
     public void shouldReturnExpectedGenresList() {
-        Genre g1 = new Genre(EXISTING_FIRST_GENRE_ID, EXISTING_FIRST_GENRE);
-        Genre g2 = new Genre(EXISTING_SECOND_GENRE_ID, EXISTING_SECOND_GENRE);
-        Author a1 = new Author(EXISTING_FIRST_AUTHOR_ID, EXISTING_FIRST_AUTHOR);
-        Author a2 = new Author(EXISTING_SECOND_AUTHOR_ID, EXISTING_SECOND_AUTHOR);
-
-        List<Genre> expectedGenreList = Arrays.asList(
-                new Genre(EXISTING_FIRST_GENRE_ID, EXISTING_FIRST_GENRE,
-                        Arrays.asList(new Book(EXISTING_FIRST_BOOK_ID, EXISTING_FIRST_BOOK,a1, g1))),
-                new Genre(EXISTING_SECOND_GENRE_ID, EXISTING_SECOND_GENRE,
-                        Arrays.asList(new Book(EXISTING_SECOND_AUTHOR_ID, EXISTING_SECOND_BOOK,a2, g2)))
+        List<String> expectedGenreNameList = Arrays.asList(
+                new Genre(EXISTING_FIRST_GENRE).getName(),
+                new Genre(EXISTING_SECOND_GENRE).getName()
         );
         List<Genre> actualGenreList = genreRepository.findAll();
-        assertThat(CollectionUtils.isEqualCollection(actualGenreList, expectedGenreList));
+        List<String> actualGenreNameList = new ArrayList<>();
+        actualGenreList.forEach(genre -> actualGenreNameList.add(genre.getName()));
+        assertThat(actualGenreNameList).containsAll(expectedGenreNameList);
     }
 
     @DisplayName("проверять удаление жанра по его id")
     @Test
     public void shouldDeleteCorrectGenreById() {
-        Genre secondGenre = em.find(Genre.class, EXISTING_SECOND_GENRE_ID);
-        assertThat(secondGenre).isNotNull();
-        em.detach(secondGenre);
+        List<Genre> genresBeforeDeleting = genreRepository.findAll();
+        int countBeforeDeleting = genresBeforeDeleting.size();
 
-        genreRepository.deleteById(EXISTING_SECOND_GENRE_ID);
-        Genre deletedGenre = em.find(Genre.class, EXISTING_SECOND_GENRE_ID);
+        Genre deletingGenre = genresBeforeDeleting.get(0);
+        assertThat(deletingGenre).isNotNull();
 
-        assertThat(deletedGenre).isNull();
+        genreRepository.deleteById(deletingGenre.getId());
+        List<Genre> genresAfterDeleting = genreRepository.findAll();
+        int countAfterDeleting = genresAfterDeleting.size();
+
+        assertThat(countBeforeDeleting).isNotEqualTo(countAfterDeleting);
+        assertThat(deletingGenre).isNotIn(genresAfterDeleting);
     }
 }

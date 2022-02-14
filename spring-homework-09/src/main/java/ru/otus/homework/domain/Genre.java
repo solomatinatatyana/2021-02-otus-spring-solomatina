@@ -3,37 +3,20 @@ package ru.otus.homework.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
-import javax.persistence.*;
-import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "genres")
+@Document(collection = "genres")
 public class Genre {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Field(name = "name")
     private  String name;
-
-    @Fetch(FetchMode.JOIN)
-    @OneToMany(mappedBy = "genre", fetch = FetchType.LAZY)
-    private List<Book> books;
-
-    public Genre(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public Genre(long id) {
-        this.id = id;
-    }
 
     public Genre(String name) {
         this.name = name;

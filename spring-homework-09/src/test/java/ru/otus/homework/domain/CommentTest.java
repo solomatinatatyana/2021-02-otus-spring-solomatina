@@ -11,13 +11,9 @@ public class CommentTest {
     @DisplayName("Комментарий корректно создаётся конструктором")
     @Test()
     public void shouldHaveCorrectCommentConstructor(){
-        Book book = new Book(1,"testBook",
-                new Author(1,"testAuthor"),
-                new Genre(1, "testGenre"));
-        Comment comment = new Comment(1, "testComment", book);
+        Comment comment = new Comment("testComment",5);
         assertAll("comment",
-                ()-> assertEquals(1, comment.getId()),
                 ()-> assertEquals("testComment", comment.getCommentText()),
-                ()->assertEquals(book, comment.getBook()));
+                ()->assertEquals(5, comment.getRating()));
     }
 }

@@ -12,14 +12,11 @@ public class BookTest {
     @DisplayName("Книга корректно создаётся конструктором")
     @Test()
     public void shouldHaveCorrectBookConstructor(){
-        Book book = new Book(1, "testTitleBook",
-                new Author(1, "testAuthor"),
-                new Genre(1, "testGenre"));
+        Book book = new Book("testTitleBook",
+                new Author("testAuthor"),
+                new Genre("testGenre"));
         assertAll("book",
-                ()-> assertEquals(1, book.getId()),
                 ()-> assertEquals("testTitleBook", book.getTitle()),
-                ()-> assertEquals(1,book.getAuthor().getId()),
-                ()-> assertEquals(1, book.getGenre().getId()),
                 ()-> assertEquals("testAuthor", book.getAuthor().getFullName()),
                 ()-> assertEquals("testGenre", book.getGenre().getName()));
     }
