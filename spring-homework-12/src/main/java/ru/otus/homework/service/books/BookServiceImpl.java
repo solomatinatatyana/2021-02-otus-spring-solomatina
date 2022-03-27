@@ -1,5 +1,17 @@
 package ru.otus.homework.service.books;
 
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.GrantedAuthoritySid;
+import org.springframework.security.acls.domain.ObjectIdentityImpl;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.Sid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.domain.Author;
@@ -17,12 +29,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService{
+    private final MutableAclService mutableAclService;
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
     private final AuthorRepository authorRepository;
 
-    public BookServiceImpl(BookRepository bookRepository, GenreRepository genreRepository,
+    public BookServiceImpl(MutableAclService mutableAclService, BookRepository bookRepository, GenreRepository genreRepository,
                            AuthorRepository authorRepository) {
+        this.mutableAclService = mutableAclService;
         this.bookRepository = bookRepository;
         this.genreRepository = genreRepository;
         this.authorRepository = authorRepository;
@@ -30,6 +44,7 @@ public class BookServiceImpl implements BookService{
 
     @Transactional
     @Override
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public void createBook(Book book, Author author, Genre genre) {
         book.setAuthor(author);
         book.setGenre(genre);
@@ -38,9 +53,23 @@ public class BookServiceImpl implements BookService{
         }else {
             throw new BookException("book with title ["+ book.getTitle() +"] is already exist!");
         }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Sid owner = new PrincipalSid(authentication);
+        ObjectIdentity oid = new ObjectIdentityImpl(book.getClass(), book.getId());
+
+        final Sid admin = new GrantedAuthoritySid("ROLE_ADMIN");
+
+        MutableAcl acl = mutableAclService.createAcl(oid);
+        acl.setOwner(owner);
+        acl.insertAce( acl.getEntries().size(), BasePermission.READ, admin, true );
+        acl.insertAce( acl.getEntries().size(), BasePermission.WRITE, admin, true );
+
+        mutableAclService.updateAcl(acl);
     }
 
     @Override
+    @PostAuthorize("hasPermission(#book, 'WRITE')")
     public void updateBookById(long id, Book book) {
         Book bookToBeUpdated = getBookById(id);
         bookToBeUpdated.setTitle(book.getTitle());
@@ -55,6 +84,7 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
+    @PostAuthorize("hasPermission(returnObject, 'READ')")
     public Book getBookById(long id) {
         return bookRepository.findById(id).orElseThrow(()-> new BookException("Book with id [" + id + "] not found"));
     }
@@ -66,12 +96,14 @@ public class BookServiceImpl implements BookService{
 
     @Transactional
     @Override
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public void deleteBookById(long id) {
         bookRepository.deleteBookByIdWithComments(id);
     }
 
     @Transactional
     @Override
+    @PreAuthorize(value = "hasRole('ADMIN')")
     public void deleteBookByTitle(String title) {
         bookRepository.deleteBookByTitleWithComments(title);
     }

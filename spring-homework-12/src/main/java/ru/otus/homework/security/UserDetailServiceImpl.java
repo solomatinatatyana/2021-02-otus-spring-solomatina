@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.otus.homework.domain.Role;
 import ru.otus.homework.domain.User;
 import ru.otus.homework.repository.user.UserRepository;
 
@@ -27,14 +26,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);
 
-        user.orElseThrow(()-> new UsernameNotFoundException("Not found " + username));
+        user.orElseThrow(() -> new UsernameNotFoundException("Not found " + username));
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
-        for (Role role : user.get().getRoles()){
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.name()));
-        }
+        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+user.get().getRoles().name()));
 
-        return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(), grantedAuthorities);
+        return new SecurityUserDetails(user.get().getUsername(), user.get().getPassword(), grantedAuthorities, user.get().isActive());
     }
 }
