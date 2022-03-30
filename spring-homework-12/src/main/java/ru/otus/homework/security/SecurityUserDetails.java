@@ -2,21 +2,20 @@ package ru.otus.homework.security;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class SecurityUserDetails implements UserDetails {
 
     private String username;
     private String password;
-    private List<SimpleGrantedAuthority> authorities;
+    private Set<GrantedAuthority> authorities;
     private boolean active;
 
-    public SecurityUserDetails(String username, String password, List<SimpleGrantedAuthority> authorities, boolean active) {
+    public SecurityUserDetails(String username, String password, Set<GrantedAuthority> authorities, boolean active) {
         this.username = username;
         this.password = password;
         this.authorities = authorities;

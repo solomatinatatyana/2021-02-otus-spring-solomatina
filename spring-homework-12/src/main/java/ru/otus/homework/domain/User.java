@@ -1,18 +1,18 @@
 package ru.otus.homework.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "library_users")
+@Builder
 public class User {
 
     @Id
@@ -31,8 +31,11 @@ public class User {
     @Column(name = "active")
     private boolean active;
 
-    @ElementCollection(targetClass = Role.class,fetch = FetchType.EAGER)
-    @CollectionTable(name = "authorities", joinColumns = @JoinColumn(name = "username"))
+    //@ElementCollection(targetClass = Role.class,fetch = FetchType.EAGER)
+    //@CollectionTable(name = "authorities", joinColumns = @JoinColumn(name = "username"))
+   /* @Enumerated(EnumType.STRING)
+    private Set<Role> roles;*/
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    @Column(name = "roles")
+    private Role roles;
 }

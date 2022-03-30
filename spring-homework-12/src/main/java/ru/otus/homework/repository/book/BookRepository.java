@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import ru.otus.homework.domain.Book;
 import ru.otus.homework.dto.BookComments;
 
@@ -12,7 +15,10 @@ import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book,Long>, BookRepositoryCustom {
     @EntityGraph(value = "book-entity-graph")
+    @PostFilter("hasPermission(filterObject, 'READ')")
     List<Book> findAll();
+
+    @PostAuthorize("hasPermission(returnObject, 'READ')")
     Optional<Book> findByTitle(String title);
 
     @Query("select new ru.otus.homework.dto.BookComments(b, count(c)) " +
