@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 
 @SpringBootApplication
 @EnableJpaRepositories
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SpringHomework12Application {
 
     public static void main(String[] args) {
