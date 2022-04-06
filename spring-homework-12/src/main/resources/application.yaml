@@ -19,3 +19,34 @@ server:
     whitelabel:
       enabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers,logfile,prometheus,env,configprops
+
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+    logfile:
+      enabled: true
+
+  info:
+    env:
+      enabled: false
+    git:
+      mode: full
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        step: 1m
+        descriptions: false
+logging:
+  file:
+    name: ./spring-homework-12/logs/log-file.log
+

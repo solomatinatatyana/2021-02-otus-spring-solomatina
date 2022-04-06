@@ -1,5 +1,6 @@
 package ru.otus.homework.rest;
 
+import io.micrometer.core.annotation.Timed;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +20,8 @@ import ru.otus.homework.service.genres.GenreService;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static ru.otus.homework.metrics.Metrics.Books.*;
 
 @Controller
 public class BookController {
@@ -42,6 +45,7 @@ public class BookController {
         this.authorMapper = authorMapper;
     }
 
+    @Timed(GET_BOOKS_REQ_TIME)
     @GetMapping(value = "/book")
     public String getBooks(@RequestParam(required = false, name = "author") String author,
                            @RequestParam(required = false, name = "genre") String genre,
@@ -58,6 +62,7 @@ public class BookController {
         return "book-list";
     }
 
+    @Timed(GET_BOOK_EDIT_REQ_TIME)
     @GetMapping(value = "/book/{id}/edit")
     public String editBookForm(@PathVariable("id") long id, Model model){
         BookDto book = bookMapper.toBookDto(bookService.getBookById(id));
@@ -69,6 +74,7 @@ public class BookController {
         return "book-edit";
     }
 
+    @Timed(PATCH_BOOK_REQ_TIME)
     @PatchMapping(value = "/book/{id}")
     public String saveBook(@PathVariable("id") long id,
                            @ModelAttribute("book") BookDto book){
@@ -76,12 +82,14 @@ public class BookController {
         return "redirect:/book";
     }
 
+    @Timed(GET_BOOK_ADD_REQ_TIME)
     @GetMapping(value = "/book/add")
     public String showAddBookForm(Model model){
         model.addAttribute("book",new Book());
         return "book-add";
     }
 
+    @Timed(CREATE_BOOK_REQ_TIME)
     @PostMapping(value = "/book")
     public String addBook(@Valid @ModelAttribute("book") BookDto book, BindingResult result, String fio, String name, Model model){
         if(result.hasErrors()) {
@@ -93,6 +101,7 @@ public class BookController {
         return "redirect:/book";
     }
 
+    @Timed(DELETE_BOOK_REQ_TIME)
     @DeleteMapping(value = "/book/{id}")
     public String deleteBook(@PathVariable("id") long id){
         bookService.deleteBookById(id);
