@@ -167,6 +167,7 @@
                 <version>4.9.10</version>
             </plugin>
         </plugins>
+        <finalName>spring-homework-17-docker</finalName>
     </build>
 
 </project>
