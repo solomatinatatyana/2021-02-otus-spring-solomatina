@@ -16,6 +16,8 @@
         <module>spring-homework-08</module>
         <module>spring-homework-09</module>
         <module>spring-homework-12</module>
+        <module>dashboard</module>
+        <module>eureka-server</module>
     </modules>
 
 

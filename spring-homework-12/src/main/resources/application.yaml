@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: library
   h2:
     console.enabled: true
   mvc:
@@ -23,7 +25,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,loggers,logfile,prometheus,env,configprops
+        include: "*"
 
   endpoint:
     health:
@@ -49,4 +51,19 @@ management:
 logging:
   file:
     name: ./spring-homework-12/logs/log-file.log
+
+eureka:
+  client.service-url:
+    defaultZone: http://localhost:9001/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+  server:
+    eviction-interval-timer-in-ms: 15000
+  instance:
+    leaseRenewalIntervalInSeconds: 30
+    leaseExpirationDurationInSeconds: 90
+
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
 

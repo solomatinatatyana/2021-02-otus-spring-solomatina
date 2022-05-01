@@ -2,7 +2,6 @@ package ru.otus.homework.service.comments;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.homework.domain.Book;
 import ru.otus.homework.domain.Comment;
 import ru.otus.homework.exceptions.CommentException;
 import ru.otus.homework.repository.comment.CommentRepository;

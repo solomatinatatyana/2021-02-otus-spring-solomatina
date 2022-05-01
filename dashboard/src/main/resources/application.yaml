@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: dashboard
+server:
+  port: 9788
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+turbine:
+  app-config: library
+  cluster-name-expression: new String("default")
+
+#Eureka Discovery settings
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9001/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+  instance:
+    prefer-ip-address: true
+    leaseRenewalIntervalInSeconds: 30
+    leaseExpirationDurationInSeconds: 30
+    instance-id: ${spring.application.name}:${server.port}
+
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "*"
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
