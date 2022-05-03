@@ -1,5 +1,6 @@
 package ru.otus.homework.service.books;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
@@ -24,8 +25,11 @@ import ru.otus.homework.repository.author.AuthorRepository;
 import ru.otus.homework.repository.book.BookRepository;
 import ru.otus.homework.repository.genre.GenreRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.otus.homework.util.SleepUtil.sleepRandomly;
 
 @Service
 public class BookServiceImpl implements BookService{
@@ -42,10 +46,12 @@ public class BookServiceImpl implements BookService{
         this.authorRepository = authorRepository;
     }
 
+    @HystrixCommand(commandKey="getBookKey", fallbackMethod="buildFallbackBookCreate")
     @Transactional
     @Override
     @PreAuthorize(value = "hasRole('ADMIN')")
     public void createBook(Book book, Author author, Genre genre) {
+        sleepRandomly();
         book.setAuthor(author);
         book.setGenre(genre);
         if(!bookRepository.existsBookByTitle(book.getTitle())){
@@ -68,9 +74,11 @@ public class BookServiceImpl implements BookService{
         mutableAclService.updateAcl(acl);
     }
 
+    @HystrixCommand(commandKey="getBookKey", fallbackMethod="buildFallbackBookUpdate")
     @Override
     @PostAuthorize("hasPermission(#book, 'WRITE')")
     public void updateBookById(long id, Book book) {
+        sleepRandomly();
         Book bookToBeUpdated = getBookById(id);
         bookToBeUpdated.setTitle(book.getTitle());
         bookToBeUpdated.setGenre(genreRepository.findByName(book.getGenre().getName()).get());
@@ -78,33 +86,45 @@ public class BookServiceImpl implements BookService{
         bookRepository.saveAndFlush(bookToBeUpdated);
     }
 
+    @HystrixCommand(commandKey="getBookKey", fallbackMethod="buildFallbackBooks")
     @Override
     public Book getBookByTitle(String title) {
+        sleepRandomly();
         return bookRepository.findByTitle(title).orElseThrow(()-> new BookException("Book with id [" + title + "] not found"));
     }
 
+    @HystrixCommand(commandKey="getBookKey", fallbackMethod="buildFallbackBookById")
     @Override
     @PostAuthorize("hasPermission(returnObject, 'READ')")
     public Book getBookById(long id) {
+        sleepRandomly();
         return bookRepository.findById(id).orElseThrow(()-> new BookException("Book with id [" + id + "] not found"));
     }
 
+    /*@HystrixCommand(commandKey="getBookKey", fallbackMethod="buildFallbackAllBooks", commandProperties= {
+            @HystrixProperty(name="execution.isolation.thread.timeoutInMilliseconds", value="3000")
+})*/
     @Override
     public List<Book> getAllBooks() {
+       // sleepRandomly();
         return bookRepository.findAll();
     }
 
+    @HystrixCommand(commandKey="getBookKey", fallbackMethod="buildFallbackBookDeleteById")
     @Transactional
     @Override
     @PreAuthorize(value = "hasRole('ADMIN')")
     public void deleteBookById(long id) {
+        sleepRandomly();
         bookRepository.deleteBookByIdWithComments(id);
     }
 
+    @HystrixCommand(commandKey="getBookKey", fallbackMethod="buildFallbackBookDeleteByTitle")
     @Transactional
     @Override
     @PreAuthorize(value = "hasRole('ADMIN')")
     public void deleteBookByTitle(String title) {
+        sleepRandomly();
         bookRepository.deleteBookByTitleWithComments(title);
     }
 
@@ -139,5 +159,56 @@ public class BookServiceImpl implements BookService{
     @Override
     public long getBookCommentsCount(int bookId) {
         return getCommentsByBookId(bookId).size();
+    }
+
+    public Book buildFallbackBooks(String bookTitle) {
+        Book book = new Book();
+        Genre genre = new Genre(0L, "N/A genre");
+        Author author = new Author(0L, "N/A author");
+        book.setId(0L);
+        book.setTitle(bookTitle);
+        book.setGenre(genre);
+        book.setAuthor(author);
+        return book;
+    }
+
+    public Book buildFallbackBookById(long id) {
+        Book book = new Book();
+        Genre genre = new Genre(0L, "N/A genre");
+        Author author = new Author(0L, "N/A author");
+        book.setId(id);
+        book.setTitle("N/A bookTitle");
+        book.setGenre(genre);
+        book.setAuthor(author);
+        return book;
+    }
+
+    public List<Book> buildFallbackAllBooks() {
+        Book book = new Book();
+        Genre genre = new Genre(0L, "N/A genre");
+        Author author = new Author(0L, "N/A author");
+        book.setId(0L);
+        book.setTitle("N/A bookTitle");
+        book.setGenre(genre);
+        book.setAuthor(author);
+        List<Book> books = new ArrayList<>();
+        books.add(book);
+        return books;
+    }
+
+    public void buildFallbackBookUpdate(long id, Book book) {
+        System.out.println(book.getTitle() + " not updated");
+    }
+
+    public void buildFallbackBookCreate(Book book, Author author, Genre genre) {
+        System.out.println(book.getTitle() + " not created");
+    }
+
+    public void buildFallbackBookDeleteById(long id) {
+        System.out.println("book with " + id + " not deleted");
+    }
+
+    public void buildFallbackBookDeleteByTitle(String title) {
+        System.out.println("book with " + title + " not deleted");
     }
 }

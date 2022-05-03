@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: eureka-discovery-server
+
+server:
+  port: 9001
+
+## Standalone Eureka settings
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9001/eureka
+    register-with-eureka: false
+    fetch-registry: false
+
+  server:
+    wait-time-in-ms-when-sync-empty: 5
+    registry-sync-retries: 3
+    max-threads-for-peer-replication: 0
